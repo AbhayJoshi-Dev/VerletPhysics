@@ -3,8 +3,12 @@
 #include<SDL.h>
 #include<SDL_image.h>
 #include<iostream>
+#include<forward_list>
 
+#include"AssetManager.h"
 #include"Utils.h"
+#include"Entity.h"
+#include"Ball.h"
 
 class Game
 {
@@ -25,6 +29,9 @@ private:
 
 	SDL_Event m_event;
 	bool m_gameRunning;
+
+	std::unique_ptr<AssetManager> m_assetManager;
+	std::forward_list<std::unique_ptr<Entity>> m_entities;
 
 	const float TIMESTEP = 0.01f;
 	float m_accumulator = 0.f;

@@ -7,6 +7,7 @@
 
 class AssetManager
 {
+public:
 	AssetManager() = default;
 	virtual ~AssetManager();
 

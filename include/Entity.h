@@ -4,6 +4,7 @@
 
 class Entity
 {
+public:
 	Entity();
 	virtual ~Entity() = default;
 	virtual void Update();
