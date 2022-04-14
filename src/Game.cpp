@@ -17,7 +17,9 @@ Game::Game()
 
 	m_assetManager->Load(m_renderer, "Ball", "res/gfx/Ball.png");
 
-	m_entities.push_front(std::make_unique<Ball>(*m_assetManager, Vector(1920.f / 4.f, 1080.f / 4.f)));
+	m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(480.f, 270.f)));
+	m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(480.f, 200.f)));
+
 }
 
 Game::~Game()
@@ -65,6 +67,7 @@ void Game::GameLoop()
 
 				for (const auto& entity : m_entities)
 					entity->HandleEvents(m_event);
+
 			}
 			m_accumulator -= TIMESTEP;
 		}
@@ -86,6 +89,8 @@ void Game::Update()
 
 	for (const auto& entity : m_entities)
 		entity->Update();
+
+	CheckBallToBallCollision();
 }
 
 void Game::Render()
@@ -101,4 +106,54 @@ void Game::Render()
 	}
 
 	SDL_RenderPresent(m_renderer);
+}
+
+void Game::CheckBallToBallCollision()
+{
+	for (const auto& entity1 : m_entities)
+	{
+		for (const auto& entity2 : m_entities)
+		{
+			Ball* b1 = const_cast<Ball*>(dynamic_cast<const Ball*>(entity1.get()));
+			Ball* b2 = const_cast<Ball*>(dynamic_cast<const Ball*>(entity2.get()));
+
+			if (IsCollisionBetweenBalls(b1, b2) && entity1 != entity2)
+			{
+				BallCollision(b1, b2);
+			}
+		}
+	}
+}
+
+bool Game::IsCollisionBetweenBalls(Ball* b1, Ball* b2)
+{
+	double dx = b1->GetPosition().GetX() - b2->GetPosition().GetX();
+	double dy = b1->GetPosition().GetY() - b2->GetPosition().GetY();
+
+	double dst = std::sqrt(dx * dx + dy * dy);
+	double sumRadi = b1->GetRadius() + b2->GetRadius();
+
+	if (sumRadi < dst)
+		return false;
+
+	return true;
+}
+
+void Game::BallCollision(Ball* b1, Ball* b2)
+{
+	Vector normalVector = b1->GetPosition() - b2->GetPosition();
+	double dst = std::sqrt(normalVector.GetX() * normalVector.GetX() + normalVector.GetY() * normalVector.GetY());
+	if (dst < 0.1)
+		dst = 0.1;
+	Vector normalVectorNormalized = Vector(normalVector.GetX() / dst, normalVector.GetY() / dst);
+
+	Vector deltaVelocityVector = b1->m_velocity - b2->m_velocity;
+	b1->m_velocity.SetX(b1->m_bounce * (b1->m_velocity.GetX() * (b1->m_mass - b2->m_mass) + (2 * b2->m_mass * b2->m_velocity.GetX())) / (b1->m_mass + b2->m_mass));
+	b1->m_velocity.SetY(b1->m_bounce * (b1->m_velocity.GetY() * (b1->m_mass - b2->m_mass) + (2 * b2->m_mass * b2->m_velocity.GetY())) / (b1->m_mass + b2->m_mass));
+	b2->m_velocity.SetX(-b2->m_bounce * (b2->m_velocity.GetX() * (b2->m_mass - b1->m_mass) + (2 * b1->m_mass * b1->m_velocity.GetX())) / (b1->m_mass + b2->m_mass));
+	b2->m_velocity.SetY(-b2->m_bounce * (b2->m_velocity.GetY() * (b2->m_mass - b1->m_mass) + (2 * b1->m_mass * b1->m_velocity.GetY())) / (b1->m_mass + b2->m_mass));
+	
+	double travelDst = (0.08 + (b1->GetRadius() + b2->GetRadius())) - dst;
+	b1->SetPosition(b1->GetPosition() + Vector(0.5 * travelDst * normalVectorNormalized.GetX(), 0.5 * travelDst * normalVectorNormalized.GetY()));
+	b2->SetPosition(b2->GetPosition() + Vector(-0.5 * travelDst * normalVectorNormalized.GetX(), -0.5 * travelDst * normalVectorNormalized.GetY()));
 }

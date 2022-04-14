@@ -12,14 +12,17 @@ public:
 	void Update() override final;
 	void HandleEvents(SDL_Event& event) override final;
 	void Render(SDL_Renderer* renderer) const override final;
+	float GetRadius();
 private:
 	void CheckEdgeCollision();
+public:
+	Vector m_velocity;
+	float m_bounce;
+	float m_mass;
 private:
 	SDL_Texture* m_texture;
 	SDL_Rect m_textureRect;
 
-	Vector m_velocity;
-	Vector m_gravity;
+	float m_gravity;
 
-	float m_bounce;
 };

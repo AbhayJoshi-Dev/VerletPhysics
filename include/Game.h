@@ -3,7 +3,7 @@
 #include<SDL.h>
 #include<SDL_image.h>
 #include<iostream>
-#include<forward_list>
+#include<vector>
 
 #include"AssetManager.h"
 #include"Utils.h"
@@ -19,6 +19,9 @@ public:
 	void GameLoop();
 	void Update();
 	void Render();
+	void CheckBallToBallCollision();
+	bool IsCollisionBetweenBalls(Ball* b1, Ball* b2);
+	void BallCollision(Ball* b1, Ball* b2);
 private:
 	SDL_Window* m_window;
 	SDL_Renderer* m_renderer;
@@ -31,7 +34,7 @@ private:
 	bool m_gameRunning;
 
 	std::unique_ptr<AssetManager> m_assetManager;
-	std::forward_list<std::unique_ptr<Entity>> m_entities;
+	std::vector<std::unique_ptr<Entity>> m_entities;
 
 	const float TIMESTEP = 0.01f;
 	float m_accumulator = 0.f;
