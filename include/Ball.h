@@ -19,10 +19,10 @@ public:
 	Vector m_velocity;
 	float m_bounce;
 	float m_mass;
+	SDL_Rect m_textureRect;
 private:
 	SDL_Texture* m_texture;
-	SDL_Rect m_textureRect;
 
 	float m_gravity;
-
+	float m_radius;
 };

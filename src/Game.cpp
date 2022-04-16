@@ -19,9 +19,9 @@ Game::Game()
 
 	m_assetManager->Load(m_renderer, "Ball", "res/gfx/Ball.png");
 
-	m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(480.f, 270.f)));
+	m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(480.f, 270.f), 150.f * 0.01f));
 	//m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(480.f, 200.f)));
-	//m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(480.f, 100.f)));
+	m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(480.f, 100.f), 150.f * 0.01f));
 	//m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(480.f, 50.f)));
 	//m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(480.f, 300.f)));
 	//m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(180.f, 200.f)));
@@ -122,13 +122,11 @@ void Game::Render()
 
 	for (const auto& entity : m_entities)
 	{
-		auto render = dynamic_cast<const IRenderer *>(entity.get());
+		const auto& render = dynamic_cast<const IRenderer *>(entity.get());
 
 		if (render)
 			render->Render(m_renderer);
 	}
-
-	std::cout << m_drawingBall << std::endl;
 
 	if (m_drawingBall)
 	{
@@ -149,7 +147,7 @@ void Game::CheckBallToBallCollision()
 			Ball* b1 = const_cast<Ball*>(dynamic_cast<const Ball*>(entity1.get()));
 			Ball* b2 = const_cast<Ball*>(dynamic_cast<const Ball*>(entity2.get()));
 
-			if (IsCollisionBetweenBalls(b1, b2) && entity1 != entity2)
+			if (entity1 != entity2 && IsCollisionBetweenBalls(b1, b2))
 			{
 				BallCollision(b1, b2);
 				CheckIfBallCollidesFurther(b1);
@@ -198,7 +196,7 @@ void Game::CheckIfBallCollidesFurther(Ball* b)
 	{
 		Ball* b1 = const_cast<Ball*>(dynamic_cast<const Ball*>(entity.get()));
 
-		if (IsCollisionBetweenBalls(b, b1) && b != b1)
+		if (b != b1 && IsCollisionBetweenBalls(b, b1))
 		{
 			BallCollision(b, b1);
 			CheckIfBallCollidesFurther(b);
@@ -221,7 +219,6 @@ void Game::DrawBallWithMouse()
 	m_entity = std::make_unique<Ball>(*m_assetManager, Vector(m_previousMouseX, m_previousMouseY));
 
 	Ball* b = const_cast<Ball*>(dynamic_cast<const Ball*>(m_entity.get()));
-	
 	
 	float tempScale;
 	if (dst <= 200)

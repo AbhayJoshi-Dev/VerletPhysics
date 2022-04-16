@@ -47,8 +47,8 @@ private:
 	int m_startTicks;
 	int m_frameTicks;
 
-	int m_previousMouseX = 0.f;
-	int m_previousMouseY = 0.f;
+	int m_previousMouseX = 0;
+	int m_previousMouseY = 0;
 
 	bool m_drawingBall;
 	bool m_ballDrawnSuccessfully;

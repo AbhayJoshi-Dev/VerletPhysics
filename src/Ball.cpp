@@ -18,7 +18,7 @@ Ball::Ball(const AssetManager& assetManager, const Vector& position, float scale
 
 	m_bounce = 0.75f;
 	m_mass = 1.f;
-
+	m_radius = 1.f;
 }
 
 void Ball::Update()
@@ -27,8 +27,8 @@ void Ball::Update()
 
 	m_velocity.AddTo(Vector(0.f, m_gravity));
 	CheckEdgeCollision();
-	
-	
+
+	m_radius = m_textureRect.w * this->GetScale().GetX() / 2;
 }
 
 void Ball::HandleEvents(SDL_Event& event)
@@ -62,16 +62,16 @@ void Ball::Render(SDL_Renderer* renderer) const
 
 float Ball::GetRadius()
 {
-	return m_textureRect.w / 2;
+	return m_radius;
 }
 
 void Ball::CheckEdgeCollision()
 {
 	Vector tempPosition = this->GetPosition();
 
-	if (tempPosition.GetX() >= 1920.f / 2.f - (float)m_textureRect.w)
+	if (tempPosition.GetX() >= 1920.f / 2.f - (m_radius * 2))
 	{
-		SetPosition(Vector(1920.f / 2.f - (float)m_textureRect.w, tempPosition.GetY()));
+		SetPosition(Vector(1920.f / 2.f - (m_radius * 2), tempPosition.GetY()));
 
 		m_velocity.SetX(m_velocity.GetX() * -m_bounce);
 	}
@@ -82,9 +82,9 @@ void Ball::CheckEdgeCollision()
 		m_velocity.SetX(m_velocity.GetX() * -m_bounce);
 	}
 
-	if (tempPosition.GetY() > 1080.f / 2.f - (float)m_textureRect.h)
+	if (tempPosition.GetY() > 1080.f / 2.f - (m_radius * 2))
 	{
-		SetPosition(Vector(tempPosition.GetX(), 1080.f / 2.f - (float)m_textureRect.h));
+		SetPosition(Vector(tempPosition.GetX(), 1080.f / 2.f - (m_radius * 2)));
 
 		m_velocity.SetY(m_velocity.GetY() * -m_bounce);
 	}
