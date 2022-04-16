@@ -17,5 +17,5 @@ public:
 
 private:
 	Vector m_position;
-	Vector m_scale = {1.f, 1.f};
+	Vector m_scale;
 };

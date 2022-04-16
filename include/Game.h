@@ -22,6 +22,8 @@ public:
 	void CheckBallToBallCollision();
 	bool IsCollisionBetweenBalls(Ball* b1, Ball* b2);
 	void BallCollision(Ball* b1, Ball* b2);
+	void CheckIfBallCollidesFurther(Ball* b);
+	void DrawBallWithMouse();
 private:
 	SDL_Window* m_window;
 	SDL_Renderer* m_renderer;
@@ -44,4 +46,12 @@ private:
 	float m_alpha = 0.f;
 	int m_startTicks;
 	int m_frameTicks;
+
+	int m_previousMouseX = 0.f;
+	int m_previousMouseY = 0.f;
+
+	bool m_drawingBall;
+	bool m_ballDrawnSuccessfully;
+
+	std::unique_ptr<Entity> m_entity;
 };

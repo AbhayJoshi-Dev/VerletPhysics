@@ -2,7 +2,7 @@
 
 #include<iostream>
 
-Ball::Ball(const AssetManager& assetManager, const Vector& position)
+Ball::Ball(const AssetManager& assetManager, const Vector& position, float scale)
 {
 	m_texture = assetManager.Get("Ball");
 	this->SetPosition(position);
@@ -11,12 +11,14 @@ Ball::Ball(const AssetManager& assetManager, const Vector& position)
 
 	SDL_QueryTexture(m_texture, NULL, NULL, &m_textureRect.w, &m_textureRect.h);
 
+	this->SetScale(scale);
 	m_velocity.SetLength(0.f);
 
 	m_gravity = 0.1f;
 
 	m_bounce = 0.75f;
 	m_mass = 1.f;
+
 }
 
 void Ball::Update()
@@ -25,6 +27,8 @@ void Ball::Update()
 
 	m_velocity.AddTo(Vector(0.f, m_gravity));
 	CheckEdgeCollision();
+	
+	
 }
 
 void Ball::HandleEvents(SDL_Event& event)
@@ -32,7 +36,7 @@ void Ball::HandleEvents(SDL_Event& event)
 	switch (event.type)
 	{
 	case SDL_MOUSEBUTTONDOWN:
-		m_velocity.AddTo(Vector(1.f, 0.f));
+		m_velocity.AddTo(Vector(1.f, -5.f));
 		break;
 	default:
 		break;
@@ -50,8 +54,8 @@ void Ball::Render(SDL_Renderer* renderer) const
 	SDL_Rect dst;
 	dst.x = (int)this->GetPosition().GetX();
 	dst.y = (int)this->GetPosition().GetY();
-	dst.w = src.w;
-	dst.h = src.h;
+	dst.w = src.w * this->GetScale().GetX();
+	dst.h = src.h * this->GetScale().GetY();
 
 	SDL_RenderCopy(renderer, m_texture, &src, &dst);
 }
@@ -78,7 +82,7 @@ void Ball::CheckEdgeCollision()
 		m_velocity.SetX(m_velocity.GetX() * -m_bounce);
 	}
 
-	if (tempPosition.GetY() >= 1080.f / 2.f - (float)m_textureRect.h)
+	if (tempPosition.GetY() > 1080.f / 2.f - (float)m_textureRect.h)
 	{
 		SetPosition(Vector(tempPosition.GetX(), 1080.f / 2.f - (float)m_textureRect.h));
 
