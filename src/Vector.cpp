@@ -2,9 +2,10 @@
 
 #include "Vector.h"
 
-Vector::Vector(float p_x, float p_y)
-	: m_x(p_x), m_y(p_y)
+Vector::Vector(float x, float y)
+	: m_x(x), m_y(y)
 {
+
 }
 
 void Vector::SetX(float value)

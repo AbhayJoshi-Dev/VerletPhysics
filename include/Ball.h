@@ -12,7 +12,7 @@ public:
 	void Update() override final;
 	void HandleEvents(SDL_Event& event) override final;
 	void Render(SDL_Renderer* renderer) const override final;
-	float GetRadius();
+	float GetRadius() const;
 private:
 	void CheckEdgeCollision();
 public:

@@ -4,7 +4,7 @@ Transform::Transform(const Vector& position)
 	:m_position(position)
 {}
 
-Vector Transform::GetPosition() const
+Vector Transform::GetPosition() const 
 {
 	return m_position;
 }

@@ -26,9 +26,10 @@ void Ball::Update()
 	this->SetPosition(GetPosition() + m_velocity);
 
 	m_velocity.AddTo(Vector(0.f, m_gravity));
-	CheckEdgeCollision();
 
-	m_radius = m_textureRect.w * this->GetScale().GetX() / 2;
+	m_radius = (float)m_textureRect.w * this->GetScale().GetX() / 2.f;
+	//m_mass = 0.5f * m_radius * m_radius;
+	CheckEdgeCollision();
 }
 
 void Ball::HandleEvents(SDL_Event& event)
@@ -52,15 +53,15 @@ void Ball::Render(SDL_Renderer* renderer) const
 	src.h = m_textureRect.h;
 
 	SDL_Rect dst;
-	dst.x = (int)this->GetPosition().GetX();
-	dst.y = (int)this->GetPosition().GetY();
+	dst.x = (int)this->GetPosition().GetX() - (int)m_radius;
+	dst.y = (int)this->GetPosition().GetY() - (int)m_radius;
 	dst.w = src.w * this->GetScale().GetX();
 	dst.h = src.h * this->GetScale().GetY();
 
 	SDL_RenderCopy(renderer, m_texture, &src, &dst);
 }
 
-float Ball::GetRadius()
+float Ball::GetRadius() const
 {
 	return m_radius;
 }
@@ -69,28 +70,28 @@ void Ball::CheckEdgeCollision()
 {
 	Vector tempPosition = this->GetPosition();
 
-	if (tempPosition.GetX() >= 1920.f / 2.f - (m_radius * 2))
+	if (tempPosition.GetX() >= 1920.f / 2.f - (m_radius))
 	{
-		SetPosition(Vector(1920.f / 2.f - (m_radius * 2), tempPosition.GetY()));
+		SetPosition(Vector(1920.f / 2.f - (m_radius), tempPosition.GetY()));
 
 		m_velocity.SetX(m_velocity.GetX() * -m_bounce);
 	}
-	else if (tempPosition.GetX() <= 0.f)
+	else if (tempPosition.GetX() <= 0.f + m_radius)
 	{
-		SetPosition(Vector(0.f, tempPosition.GetY()));
+		SetPosition(Vector(0.f + m_radius, tempPosition.GetY()));
 
 		m_velocity.SetX(m_velocity.GetX() * -m_bounce);
 	}
 
-	if (tempPosition.GetY() > 1080.f / 2.f - (m_radius * 2))
+	if (tempPosition.GetY() > 1080.f / 2.f - (m_radius))
 	{
-		SetPosition(Vector(tempPosition.GetX(), 1080.f / 2.f - (m_radius * 2)));
+		SetPosition(Vector(tempPosition.GetX(), 1080.f / 2.f - (m_radius)));
 
 		m_velocity.SetY(m_velocity.GetY() * -m_bounce);
 	}
-	else if (tempPosition.GetY() <= 0.f)
+	else if (tempPosition.GetY() <= 0.f + m_radius)
 	{
-		SetPosition(Vector(tempPosition.GetX(), 0.f));
+		SetPosition(Vector(tempPosition.GetX(), 0.f + m_radius));
 
 		m_velocity.SetY(m_velocity.GetY() * -m_bounce);
 	}

@@ -4,7 +4,7 @@ class Vector
 {
 public:
 	Vector() = default;
-	Vector(float p_x, float p_y);
+	Vector(float x, float y);
 
 	// Returns the x component.
 	float GetX() const;

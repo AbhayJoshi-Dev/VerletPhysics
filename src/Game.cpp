@@ -19,9 +19,9 @@ Game::Game()
 
 	m_assetManager->Load(m_renderer, "Ball", "res/gfx/Ball.png");
 
-	m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(480.f, 270.f), 150.f * 0.01f));
+	m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(480.f, 270.f), 200.f * 0.01f));
 	//m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(480.f, 200.f)));
-	m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(480.f, 100.f), 150.f * 0.01f));
+	m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(470.f, 100.f), 100.f * 0.01f));
 	//m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(480.f, 50.f)));
 	//m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(480.f, 300.f)));
 	//m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(180.f, 200.f)));
@@ -130,7 +130,7 @@ void Game::Render()
 
 	if (m_drawingBall)
 	{
-		auto r = dynamic_cast<const IRenderer*>(m_entity.get());
+		const auto& r = dynamic_cast<const IRenderer*>(m_entity.get());
 		if (r)
 			r->Render(m_renderer);
 	}
@@ -174,9 +174,11 @@ bool Game::IsCollisionBetweenBalls(Ball* b1, Ball* b2)
 void Game::BallCollision(Ball* b1, Ball* b2)
 {
 	Vector normalVector = b1->GetPosition() - b2->GetPosition();
-	double dst = std::sqrt(normalVector.GetX() * normalVector.GetX() + normalVector.GetY() * normalVector.GetY());
-	if (dst < 0.1)
-		dst = 0.1;
+
+	float dst = std::sqrt(normalVector.GetX() * normalVector.GetX() + normalVector.GetY() * normalVector.GetY());
+	if (dst < 0.1f)
+		dst = 0.1f;
+
 	Vector normalVectorNormalized = Vector(normalVector.GetX() / dst, normalVector.GetY() / dst);
 
 	Vector deltaVelocityVector = b1->m_velocity - b2->m_velocity;
@@ -185,9 +187,10 @@ void Game::BallCollision(Ball* b1, Ball* b2)
 	b2->m_velocity.SetX(-b2->m_bounce * (b2->m_velocity.GetX() * (b2->m_mass - b1->m_mass) + (2 * b1->m_mass * b1->m_velocity.GetX())) / (b1->m_mass + b2->m_mass));
 	b2->m_velocity.SetY(-b2->m_bounce * (b2->m_velocity.GetY() * (b2->m_mass - b1->m_mass) + (2 * b1->m_mass * b1->m_velocity.GetY())) / (b1->m_mass + b2->m_mass));
 	
-	double travelDst = (0.08 + (b1->GetRadius() + b2->GetRadius())) - dst;
-	b1->SetPosition(b1->GetPosition() + Vector(0.5 * travelDst * normalVectorNormalized.GetX(), 0.5 * travelDst * normalVectorNormalized.GetY()));
-	b2->SetPosition(b2->GetPosition() + Vector(-0.5 * travelDst * normalVectorNormalized.GetX(), -0.5 * travelDst * normalVectorNormalized.GetY()));
+	float travelDst = (0.08f + (b1->GetRadius() + b2->GetRadius())) - dst;
+
+	b1->SetPosition(b1->GetPosition() + Vector(0.5f * travelDst * normalVectorNormalized.GetX(), 0.5f * travelDst * normalVectorNormalized.GetY()));
+	b2->SetPosition(b2->GetPosition() + Vector(-0.5f * travelDst * normalVectorNormalized.GetX(), -0.5f * travelDst * normalVectorNormalized.GetY()));
 }
 
 void Game::CheckIfBallCollidesFurther(Ball* b)
@@ -213,15 +216,14 @@ void Game::DrawBallWithMouse()
 	int dx = currentMouseX - m_previousMouseX;
 	int dy = currentMouseY - m_previousMouseY;
 
-	float dst = std::sqrt(dx * dx + dy * dy);
+	float dst = (float)std::sqrt(dx * dx + dy * dy);
 
-
-	m_entity = std::make_unique<Ball>(*m_assetManager, Vector(m_previousMouseX, m_previousMouseY));
+	m_entity = std::make_unique<Ball>(*m_assetManager, Vector((float)m_previousMouseX, (float)m_previousMouseY));
 
 	Ball* b = const_cast<Ball*>(dynamic_cast<const Ball*>(m_entity.get()));
 	
 	float tempScale;
-	if (dst <= 200)
+	if (dst <= 200.f)
 		tempScale = dst * 0.01f;
 	else
 		tempScale = 200 * 0.01f;
@@ -230,7 +232,7 @@ void Game::DrawBallWithMouse()
 
 	if (m_ballDrawnSuccessfully)
 	{
-		m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(m_previousMouseX, m_previousMouseY), tempScale));
+		m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector((float)m_previousMouseX, (float)m_previousMouseY), tempScale));
 		m_drawingBall = false;
 		m_ballDrawnSuccessfully = false;
 	}
