@@ -9,6 +9,7 @@
 #include"Utils.h"
 #include"Entity.h"
 #include"Ball.h"
+#include"Wall.h"
 
 class Game
 {
@@ -24,6 +25,9 @@ public:
 	void BallCollision(Ball* b1, Ball* b2);
 	void CheckIfBallCollidesFurther(Ball* b);
 	void DrawBallWithMouse();
+	void DrawWall();
+	void CheckBallToWallCollision();
+	bool IsCollisionBetweenBallAndWall(Ball* b, Wall* w);
 private:
 	SDL_Window* m_window;
 	SDL_Renderer* m_renderer;
@@ -37,6 +41,7 @@ private:
 
 	std::unique_ptr<AssetManager> m_assetManager;
 	std::vector<std::unique_ptr<Entity>> m_entities;
+	std::vector<std::unique_ptr<Wall>> m_walls;
 
 	const float TIMESTEP = 0.01f;
 	float m_accumulator = 0.f;
@@ -52,6 +57,9 @@ private:
 
 	bool m_drawingBall;
 	bool m_ballDrawnSuccessfully;
+
+	bool m_drawingWall;
+	bool m_wallDrawnSuccessfully;
 
 	std::unique_ptr<Entity> m_entity;
 };

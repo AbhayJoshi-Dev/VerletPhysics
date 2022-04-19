@@ -17,16 +17,13 @@ Game::Game()
 	m_drawingBall = false;
 	m_ballDrawnSuccessfully = false;
 
+	m_drawingWall = false;
+	m_wallDrawnSuccessfully = false;
+
 	m_assetManager->Load(m_renderer, "Ball", "res/gfx/Ball.png");
 
-	m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(480.f, 270.f), 200.f * 0.01f));
-	//m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(480.f, 200.f)));
-	m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(470.f, 100.f), 100.f * 0.01f));
-	//m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(480.f, 50.f)));
-	//m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(480.f, 300.f)));
-	//m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(180.f, 200.f)));
-	//m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(280.f, 200.f)));
-
+	m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(480.f, 270.f), 100.f * 0.01f));
+//	m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(470.f, 100.f), 200.f * 0.01f));
 }
 
 Game::~Game()
@@ -80,6 +77,17 @@ void Game::GameLoop()
 						}
 						if (m_drawingBall && m_event.button.button == SDL_BUTTON_RIGHT)
 							m_drawingBall = false;
+
+
+						if (!m_drawingWall && m_event.button.button == SDL_BUTTON_RIGHT)
+						{
+							m_drawingWall = true;
+							SDL_GetMouseState(&m_previousMouseX, &m_previousMouseY);
+						}
+						else if (m_drawingWall && m_event.button.button == SDL_BUTTON_RIGHT)
+							m_wallDrawnSuccessfully = true;
+						
+						
 						break;
 					default:
 						break;
@@ -111,6 +119,7 @@ void Game::Update()
 		entity->Update();
 
 	CheckBallToBallCollision();
+	CheckBallToWallCollision();
 
 	if (m_drawingBall)
 		DrawBallWithMouse();
@@ -118,6 +127,7 @@ void Game::Update()
 
 void Game::Render()
 {
+	SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
 	SDL_RenderClear(m_renderer);
 
 	for (const auto& entity : m_entities)
@@ -127,6 +137,19 @@ void Game::Render()
 		if (render)
 			render->Render(m_renderer);
 	}
+
+	SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
+
+	for (const auto& wall : m_walls)
+	{
+		const auto& render = dynamic_cast<const IRenderer*>(wall.get());
+
+		if (render)
+			render->Render(m_renderer);
+	}
+
+	if (m_drawingWall)
+		DrawWall();
 
 	if (m_drawingBall)
 	{
@@ -236,4 +259,83 @@ void Game::DrawBallWithMouse()
 		m_drawingBall = false;
 		m_ballDrawnSuccessfully = false;
 	}
+}
+
+void Game::DrawWall()
+{
+	int currentMouseX = 0, currentMouseY = 0;
+	SDL_GetMouseState(&currentMouseX, &currentMouseY);
+
+	SDL_RenderDrawLine(m_renderer, m_previousMouseX, m_previousMouseY, currentMouseX, currentMouseY);
+	if (m_wallDrawnSuccessfully)
+	{	
+		int currentMouseX = 0, currentMouseY = 0;
+		SDL_GetMouseState(&currentMouseX, &currentMouseY);
+
+		//length of line
+		float len = utils::Distance(Vector((float)m_previousMouseX, (float)m_previousMouseY), Vector((float)currentMouseX, (float)currentMouseY));
+
+		//angle between x axis and line
+		float angle = (float)std::atan2((currentMouseY - m_previousMouseY), currentMouseX - m_previousMouseX) * 180 / 3.14f;
+
+		//center of line
+		Vector m = Vector(((float)m_previousMouseX + (float)currentMouseX) / 2.f, ((float)m_previousMouseY + (float)currentMouseY) / 2.f);
+
+		m_walls.push_back(std::make_unique<Wall>(m, Vector((float)m_previousMouseX, (float)m_previousMouseY), Vector((float)currentMouseX, (float)currentMouseY), angle, len));
+		m_drawingWall = false;
+		m_wallDrawnSuccessfully = false;
+	}
+}
+
+void Game::CheckBallToWallCollision()
+{
+	for (const auto& entity : m_entities)
+	{
+		for (auto& wall : m_walls)
+		{
+
+			Ball* b = const_cast<Ball*>(dynamic_cast<const Ball*>(entity.get()));
+			Wall* w = wall.get();
+
+			if (IsCollisionBetweenBallAndWall(b, w))
+			{
+				std::cout << "Colliding!" << std::endl;
+			}
+		}
+	}
+}
+
+bool Game::IsCollisionBetweenBallAndWall(Ball* b, Wall* w)
+{
+	return false;
+
+	/*Vector y = b->GetPosition() - w->m_position;
+	Vector wallNormal = Vector(cos(w->m_angle + 180 / 2.f), sin(w->m_angle + 180 / 2.f));
+
+
+	Vector u = Vector(cos(w->m_angle), sin(w->m_angle));
+
+	float d = y.GetX() * u.GetX() + y.GetY() * u.GetY();
+	Vector p = Vector(d * u.GetX(), d * u.GetY());
+
+	if (std::sqrt(p.GetX() * p.GetX() + p.GetY() * p.GetY()) > w->m_length / 2 + b->GetRadius())
+		return false;
+
+	Vector y_hat = y - p;
+
+	if (std::sqrt(y_hat.GetX() * y_hat.GetX() + y_hat.GetY() * y_hat.GetY()) > b->GetRadius())
+		return false;
+
+	return true;*/
+
+	/*Vector ac = Vector(b->GetPosition().GetX(), b->GetPosition().GetY()) - w->m_start;
+	Vector ab = w->m_end - w->m_start;
+
+	float k = ac.GetX() * ab.GetX() + ac.GetY() * ab.GetY() / ab.GetX() * ab.GetX() + ab.GetY() * ab.GetY();
+	Vector d = Vector(k * ab.GetX(), k * ab.GetY());
+	d.AddTo(w->m_start);
+
+	Vector ad = Vector(d.GetX() - w->m_start.GetX(), d.GetY() - w->m_start.GetY());
+
+	float k2 = std::abs(ab.GetX()) > std::abs(ab.GetY()) ? ad.GetX() / ab.GetX() : ad.GetY() / ab.GetY();*/
 }

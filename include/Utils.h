@@ -2,6 +2,8 @@
 
 #include<SDL.h>
 
+#include"Vector.h"
+
 namespace utils
 {
 	static float m_currentTime = 0.f;
@@ -24,5 +26,13 @@ namespace utils
 			m_fps = 0;
 		}
 		m_fps++;
+	}
+
+	inline float Distance(const Vector& a, const Vector& b)
+	{
+		float dx = a.GetX() - b.GetX();
+		float dy = a.GetY() - b.GetY();
+
+		return std::sqrt(dx * dx + dy * dy);
 	}
 }

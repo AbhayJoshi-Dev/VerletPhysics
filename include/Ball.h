@@ -25,4 +25,6 @@ private:
 
 	float m_gravity;
 	float m_radius;
+
+	float m_density;
 };
