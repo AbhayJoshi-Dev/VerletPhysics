@@ -307,35 +307,23 @@ void Game::CheckBallToWallCollision()
 
 bool Game::IsCollisionBetweenBallAndWall(Ball* b, Wall* w)
 {
-	return false;
+	float dot = ((b->GetPosition().GetX() - w->m_start.GetX()) * (w->m_end.GetX() - w->m_start.GetX()) + ((b->GetPosition().GetY() - w->m_start.GetY()) * (w->m_end.GetY() - w->m_start.GetY()))) / std::pow(w->m_length, 2);
 
-	/*Vector y = b->GetPosition() - w->m_position;
-	Vector wallNormal = Vector(cos(w->m_angle + 180 / 2.f), sin(w->m_angle + 180 / 2.f));
+	float closestX = w->m_start.GetX() + (dot * (w->m_end.GetX() - w->m_start.GetX()));
+	float closestY = w->m_start.GetY() + (dot * (w->m_end.GetY() - w->m_start.GetY()));
 
+	//float buffer = 0.1;
+	float d1 = utils::Distance(w->m_start, Vector(closestX, closestY));
+	float d2 = utils::Distance(w->m_end, Vector(closestX, closestY));
 
-	Vector u = Vector(cos(w->m_angle), sin(w->m_angle));
+	if (d1 + d2 > w->m_length) {
+		return false;
+	}
 
-	float d = y.GetX() * u.GetX() + y.GetY() * u.GetY();
-	Vector p = Vector(d * u.GetX(), d * u.GetY());
-
-	if (std::sqrt(p.GetX() * p.GetX() + p.GetY() * p.GetY()) > w->m_length / 2 + b->GetRadius())
+	if (utils::Distance(Vector(closestX, closestY), b->GetPosition()) > b->GetRadius())
 		return false;
 
-	Vector y_hat = y - p;
+	b->SetPosition(Vector(closestX, closestY));
 
-	if (std::sqrt(y_hat.GetX() * y_hat.GetX() + y_hat.GetY() * y_hat.GetY()) > b->GetRadius())
-		return false;
-
-	return true;*/
-
-	/*Vector ac = Vector(b->GetPosition().GetX(), b->GetPosition().GetY()) - w->m_start;
-	Vector ab = w->m_end - w->m_start;
-
-	float k = ac.GetX() * ab.GetX() + ac.GetY() * ab.GetY() / ab.GetX() * ab.GetX() + ab.GetY() * ab.GetY();
-	Vector d = Vector(k * ab.GetX(), k * ab.GetY());
-	d.AddTo(w->m_start);
-
-	Vector ad = Vector(d.GetX() - w->m_start.GetX(), d.GetY() - w->m_start.GetY());
-
-	float k2 = std::abs(ab.GetX()) > std::abs(ab.GetY()) ? ad.GetX() / ab.GetX() : ad.GetY() / ab.GetY();*/
+	return true;
 }
