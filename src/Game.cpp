@@ -299,7 +299,7 @@ void Game::CheckBallToWallCollision()
 
 			if (IsCollisionBetweenBallAndWall(b, w))
 			{
-				std::cout << "Colliding!" << std::endl;
+				CollideBallWithWall(b, w);
 			}
 		}
 	}
@@ -307,23 +307,45 @@ void Game::CheckBallToWallCollision()
 
 bool Game::IsCollisionBetweenBallAndWall(Ball* b, Wall* w)
 {
-	float dot = ((b->GetPosition().GetX() - w->m_start.GetX()) * (w->m_end.GetX() - w->m_start.GetX()) + ((b->GetPosition().GetY() - w->m_start.GetY()) * (w->m_end.GetY() - w->m_start.GetY()))) / std::pow(w->m_length, 2);
+	Vector y = b->GetPosition() - w->m_position;
+	Vector wallNorm = Vector(std::cos((w->m_angle * 3.14 / 180) + 3.14 / 2), std::sin((w->m_angle * 3.14 / 180) + 3.14 / 2));
 
-	float closestX = w->m_start.GetX() + (dot * (w->m_end.GetX() - w->m_start.GetX()));
-	float closestY = w->m_start.GetY() + (dot * (w->m_end.GetY() - w->m_start.GetY()));
+	Vector u = Vector(std::cos(w->m_angle * 3.14 / 180), std::sin(w->m_angle * 3.14 / 180));
 
-	//float buffer = 0.1;
-	float d1 = utils::Distance(w->m_start, Vector(closestX, closestY));
-	float d2 = utils::Distance(w->m_end, Vector(closestX, closestY));
+	std::cout << u.GetX() << ", " << u.GetY() << std::endl;
 
-	if (d1 + d2 > w->m_length) {
-		return false;
-	}
+	double u_dot_y = y.GetX() * u.GetX() + y.GetY() * u.GetY();
+	Vector y_proj_u = Vector(u_dot_y * u.GetX(), u_dot_y * u.GetY());
 
-	if (utils::Distance(Vector(closestX, closestY), b->GetPosition()) > b->GetRadius())
+	if (std::sqrt(y_proj_u.GetX() * y_proj_u.GetX() + y_proj_u.GetY() * y_proj_u.GetY()) > w->m_length / 2 + b->GetRadius())
 		return false;
 
-	b->SetPosition(Vector(closestX, closestY));
+	Vector y_hat = y - y_proj_u;
+
+	if (std::sqrt(y_hat.GetX() * y_hat.GetX() + y_hat.GetY() * y_hat.GetY()) > b->GetRadius())
+		return false;
+
+	if (wallNorm.GetX() * y.GetX() + wallNorm.GetY() * y.GetY() <= 0)
+		b->SetPosition(w->m_position + y_proj_u - Vector(std::cos((w->m_angle * 3.14 / 180) + 3.14 * 0.5) * b->GetRadius(), std::sin((w->m_angle * 3.14 / 180) + 3.14 * 0.5) * b->GetRadius()));
+	else
+		b->SetPosition(w->m_position + y_proj_u + Vector(std::cos((w->m_angle * 3.14 / 180) + 3.14 * 0.5) * b->GetRadius(), std::sin((w->m_angle * 3.14 / 180) + 3.14 * 0.5) * b->GetRadius()));
 
 	return true;
+}
+
+void Game::CollideBallWithWall(Ball* b, Wall* w)
+{
+	Vector ballVel = b->m_velocity;
+	Vector bVel_proj_wall_norm;
+	Vector bVel_proj_wall_tang;
+
+	Vector u = Vector(std::cos((w->m_angle * 3.14 / 180) + 3.14 / 2), std::sin((w->m_angle * 3.14 / 180) + 3.14 / 2));
+	double u_dot_y = ballVel.GetX() * u.GetX() + ballVel.GetY() * u.GetY();
+	bVel_proj_wall_norm = Vector(b->m_bounce * u_dot_y * u.GetX(), b->m_bounce * u_dot_y * u.GetY());
+
+	u = Vector(std::cos(w->m_angle * 3.14 / 180), std::sin(w->m_angle * 3.14 / 180));
+	u_dot_y = ballVel.GetX() * u.GetX() + ballVel.GetY() * u.GetY();
+	bVel_proj_wall_tang = Vector(u_dot_y * u.GetX(), u_dot_y * u.GetY());
+
+	b->m_velocity = bVel_proj_wall_tang - bVel_proj_wall_norm;
 }

@@ -28,6 +28,7 @@ public:
 	void DrawWall();
 	void CheckBallToWallCollision();
 	bool IsCollisionBetweenBallAndWall(Ball* b, Wall* w);
+	void CollideBallWithWall(Ball* b, Wall* ws);
 private:
 	SDL_Window* m_window;
 	SDL_Renderer* m_renderer;
