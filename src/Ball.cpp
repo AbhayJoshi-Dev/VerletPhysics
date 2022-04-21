@@ -38,7 +38,7 @@ void Ball::HandleEvents(SDL_Event& event)
 {
 	switch (event.type)
 	{
-	case SDL_MOUSEBUTTONDOWN:
+	case SDL_KEYDOWN:
 		m_velocity.AddTo(Vector(1.f, -5.f));
 		break;
 	default:
