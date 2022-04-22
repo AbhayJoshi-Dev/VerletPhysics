@@ -22,7 +22,7 @@ An experiment for learning collision detection
     # Go to project root
     $ cd Ball-Simulator
 
-    # Pull SFML as submodule (if you cloned without --recursive flag)
+    # Pull SDL and SDL_image as submodule (if you cloned without --recursive flag)
     $ git submodule update --init
 
     # Create a folder for build
