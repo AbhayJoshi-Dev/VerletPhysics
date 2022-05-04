@@ -312,8 +312,6 @@ bool Game::IsCollisionBetweenBallAndWall(Ball* b, Wall* w)
 
 	Vector u = Vector(std::cos(w->m_angle * 3.14 / 180), std::sin(w->m_angle * 3.14 / 180));
 
-	std::cout << u.GetX() << ", " << u.GetY() << std::endl;
-
 	double u_dot_y = y.GetX() * u.GetX() + y.GetY() * u.GetY();
 	Vector y_proj_u = Vector(u_dot_y * u.GetX(), u_dot_y * u.GetY());
 
