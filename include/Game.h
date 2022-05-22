@@ -4,6 +4,9 @@
 #include<SDL_image.h>
 #include<iostream>
 #include<vector>
+#include<imgui.h>
+#include<imgui_impl_sdl.h>
+#include<imgui_impl_sdlrenderer.h>
 
 #include"AssetManager.h"
 #include"Utils.h"

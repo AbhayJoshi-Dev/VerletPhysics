@@ -13,6 +13,14 @@ Game::Game()
 
 	CreateWindow(TITLE, SCREEN_WIDTH, SCREEN_HEIGHT);
 
+	//setup ImGui
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui::StyleColorsDark();
+	ImGui_ImplSDL2_InitForSDLRenderer(m_window, m_renderer);
+	ImGui_ImplSDLRenderer_Init(m_renderer);
+
+
 	m_gameRunning = true;
 	m_drawingBall = false;
 	m_ballDrawnSuccessfully = false;
@@ -28,6 +36,13 @@ Game::Game()
 
 Game::~Game()
 {
+	ImGui_ImplSDLRenderer_Shutdown();
+	ImGui_ImplSDL2_Shutdown();
+	ImGui::DestroyContext();
+
+	SDL_DestroyRenderer(m_renderer);
+	SDL_DestroyWindow(m_window);
+
 	IMG_Quit();
 	SDL_Quit();
 }
@@ -123,11 +138,21 @@ void Game::Update()
 
 	if (m_drawingBall)
 		DrawBallWithMouse();
+
+	//ImGui
+	ImGui_ImplSDLRenderer_NewFrame();
+	ImGui_ImplSDL2_NewFrame();
+	ImGui::NewFrame();
+
+	ImGui::Begin("Test");
+	ImGui::End();
+
 }
 
 void Game::Render()
 {
 	SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
+	ImGui::Render();
 	SDL_RenderClear(m_renderer);
 
 	for (const auto& entity : m_entities)
@@ -157,6 +182,8 @@ void Game::Render()
 		if (r)
 			r->Render(m_renderer);
 	}
+
+	ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
 
 	SDL_RenderPresent(m_renderer);
 }
