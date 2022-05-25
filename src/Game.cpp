@@ -28,6 +28,9 @@ Game::Game()
 	m_drawingWall = false;
 	m_wallDrawnSuccessfully = false;
 
+	m_drawBallCheckBox = false;
+	m_drawWallCheckBox = false;
+
 	m_assetManager->Load(m_renderer, "Ball", "res/gfx/Ball.png");
 
 	m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(480.f, 270.f), 100.f * 0.01f));
@@ -75,32 +78,38 @@ void Game::GameLoop()
 		{
 			while (SDL_PollEvent(&m_event))
 			{
+				ImGui_ImplSDL2_ProcessEvent(&m_event);
 				switch (m_event.type)
 				{
 					case SDL_QUIT:
 						m_gameRunning = false;
 						break;
 					case SDL_MOUSEBUTTONDOWN:
-						if (!m_drawingBall && m_event.button.button == SDL_BUTTON_LEFT)
+						if (m_drawBallCheckBox)
 						{
-							m_drawingBall = true;
-							SDL_GetMouseState(&m_previousMouseX, &m_previousMouseY);
+							if (!m_drawingBall && m_event.button.button == SDL_BUTTON_LEFT)
+							{
+								m_drawingBall = true;
+								SDL_GetMouseState(&m_previousMouseX, &m_previousMouseY);
+							}
+							else if (m_drawingBall && m_event.button.button == SDL_BUTTON_LEFT)
+							{
+								m_ballDrawnSuccessfully = true;
+							}
+							if (m_drawingBall && m_event.button.button == SDL_BUTTON_RIGHT)
+								m_drawingBall = false;
 						}
-						else if (m_drawingBall && m_event.button.button == SDL_BUTTON_LEFT)
-						{
-							m_ballDrawnSuccessfully = true;
-						}
-						if (m_drawingBall && m_event.button.button == SDL_BUTTON_RIGHT)
-							m_drawingBall = false;
 
-
-						if (!m_drawingWall && m_event.button.button == SDL_BUTTON_RIGHT)
+						if (m_drawWallCheckBox)
 						{
-							m_drawingWall = true;
-							SDL_GetMouseState(&m_previousMouseX, &m_previousMouseY);
+							if (!m_drawingWall && m_event.button.button == SDL_BUTTON_LEFT)
+							{
+								m_drawingWall = true;
+								SDL_GetMouseState(&m_previousMouseX, &m_previousMouseY);
+							}
+							else if (m_drawingWall && m_event.button.button == SDL_BUTTON_LEFT)
+								m_wallDrawnSuccessfully = true;
 						}
-						else if (m_drawingWall && m_event.button.button == SDL_BUTTON_RIGHT)
-							m_wallDrawnSuccessfully = true;
 						
 						
 						break;
@@ -138,6 +147,8 @@ void Game::Update()
 
 	if (m_drawingBall)
 		DrawBallWithMouse();
+	if (!m_drawBallCheckBox)
+		m_drawingBall = false;
 
 	//ImGui
 	ImGui_ImplSDLRenderer_NewFrame();
@@ -145,7 +156,25 @@ void Game::Update()
 	ImGui::NewFrame();
 
 	ImGui::Begin("Test");
+
+	bool temp = false;
+	temp = ImGui::Checkbox("Draw Ball", &m_drawBallCheckBox);
+	if (temp)
+		m_drawWallCheckBox = false;
+
+	if (m_drawBallCheckBox)
+		ImGui::Text("Left Click to draw ball");
+
+	temp = ImGui::Checkbox("Draw Wall", &m_drawWallCheckBox);
+	if (temp)
+		m_drawBallCheckBox = false;
+
+	if (m_drawWallCheckBox)
+		ImGui::Text("Left Click to draw wall");
+
 	ImGui::End();
+
+	
 
 }
 
@@ -175,6 +204,9 @@ void Game::Render()
 
 	if (m_drawingWall)
 		DrawWall();
+
+	if (!m_drawWallCheckBox)
+		m_drawingWall = false;
 
 	if (m_drawingBall)
 	{

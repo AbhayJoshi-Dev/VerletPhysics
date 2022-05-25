@@ -66,4 +66,7 @@ private:
 	bool m_wallDrawnSuccessfully;
 
 	std::unique_ptr<Entity> m_entity;
+
+	bool m_drawBallCheckBox;
+	bool m_drawWallCheckBox;
 };
