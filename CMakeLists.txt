@@ -44,9 +44,7 @@ target_link_libraries(Ball-Simulator imgui SDL2 SDL2main SDL2_image)
 
 add_custom_command(TARGET Ball-Simulator POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different
                     "${DEPS_DIR}/SDL/Debug/SDL2d.dll"
-                    "${DEPS_DIR}/SDL_image/Debug/SDL2_image.dll"
-                    "${DEPS_DIR}/SDL_image/external/libpng-1.6.37/Debug/libpng16d.dll"
-                    "${DEPS_DIR}/SDL_image/external/zlib-1.2.11/Debug/zlibd1.dll"
+                    "${DEPS_DIR}/SDL_image/Debug/SDL2_imaged.dll"
                     $<TARGET_FILE_DIR:Ball-Simulator>)
 
 add_custom_command(TARGET Ball-Simulator POST_BUILD

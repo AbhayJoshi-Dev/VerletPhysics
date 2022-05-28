@@ -2,7 +2,7 @@
 
 #include<iostream>
 
-Ball::Ball(const AssetManager& assetManager, const Vector& position, float scale)
+Ball::Ball(const AssetManager& assetManager, const Vector& position, float scale, float radius)
 {
 	m_texture = assetManager.Get("Ball");
 	SetPosition(position);
@@ -18,7 +18,7 @@ Ball::Ball(const AssetManager& assetManager, const Vector& position, float scale
 
 	m_bounce = 0.75f;
 	m_mass = 1.f;
-	m_radius = 1.f;
+	m_radius = radius;
 	m_density = 0.5f;
 }
 
@@ -28,8 +28,10 @@ void Ball::Update()
 
 	m_velocity.AddTo(Vector(0.f, m_gravity));
 
-	m_radius = (float)m_textureRect.w * GetScale().GetX() / 2.f;
+	//m_radius = (float)m_textureRect.w * GetScale().GetX() / 2.f;
 	m_mass = m_density * m_radius * m_radius;
+
+	std::cout << m_radius << std::endl;
 
 	CheckEdgeCollision();
 }
@@ -57,8 +59,8 @@ void Ball::Render(SDL_Renderer* renderer) const
 	SDL_Rect dst;
 	dst.x = (int)GetPosition().GetX() - (int)m_radius;
 	dst.y = (int)GetPosition().GetY() - (int)m_radius;
-	dst.w = src.w * GetScale().GetX();
-	dst.h = src.h * GetScale().GetY();
+	dst.w = src.w * m_radius / 15;//GetScale().GetX();
+	dst.h = src.h * m_radius / 15;//GetScale().GetY();
 
 	SDL_RenderCopy(renderer, m_texture, &src, &dst);
 }

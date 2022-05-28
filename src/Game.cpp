@@ -33,7 +33,7 @@ Game::Game()
 
 	m_assetManager->Load(m_renderer, "Ball", "res/gfx/Ball.png");
 
-	m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(480.f, 270.f), 100.f * 0.01f));
+	m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(480.f, 270.f), 100.f * 0.01f, 15.f));
 //	m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector(470.f, 100.f), 200.f * 0.01f));
 }
 
@@ -303,18 +303,22 @@ void Game::DrawBallWithMouse()
 	m_entity = std::make_unique<Ball>(*m_assetManager, Vector((float)m_previousMouseX, (float)m_previousMouseY));
 
 	Ball* b = const_cast<Ball*>(dynamic_cast<const Ball*>(m_entity.get()));
-	
-	float tempScale;
-	if (dst <= 200.f)
-		tempScale = dst * 0.01f;
-	else
-		tempScale = 200 * 0.01f;
+		
 
-	b->SetScale(tempScale);
+	//float tempScale;
+	//if (dst <= 200.f)
+		//tempScale = dst * 0.01f;
+	//else
+		//tempScale = 200 * 0.01f;
+
+	b->SetScale(dst / 30.f); // 30(ball png width height) , setting scale might break things
+	b->m_radius = dst;
+
+	std::cout << dst << std::endl;
 
 	if (m_ballDrawnSuccessfully)
 	{
-		m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector((float)m_previousMouseX, (float)m_previousMouseY), tempScale));
+		m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector((float)m_previousMouseX, (float)m_previousMouseY), dst / 30.f, dst));
 		m_drawingBall = false;
 		m_ballDrawnSuccessfully = false;
 	}
