@@ -314,8 +314,6 @@ void Game::DrawBallWithMouse()
 	b->SetScale(dst / 30.f); // 30(ball png width height) , setting scale might break things
 	b->m_radius = dst;
 
-	std::cout << dst << std::endl;
-
 	if (m_ballDrawnSuccessfully)
 	{
 		m_entities.push_back(std::make_unique<Ball>(*m_assetManager, Vector((float)m_previousMouseX, (float)m_previousMouseY), dst / 30.f, dst));

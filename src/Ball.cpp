@@ -31,8 +31,6 @@ void Ball::Update()
 	//m_radius = (float)m_textureRect.w * GetScale().GetX() / 2.f;
 	m_mass = m_density * m_radius * m_radius;
 
-	std::cout << m_radius << std::endl;
-
 	CheckEdgeCollision();
 }
 
