@@ -311,8 +311,13 @@ void Game::DrawBallWithMouse()
 	//else
 		//tempScale = 200 * 0.01f;
 
+	if (dst >= 30)
+		dst = 30;
+
+
 	b->SetScale(dst / 30.f); // 30(ball png width height) , setting scale might break things
 	b->m_radius = dst;
+
 
 	if (m_ballDrawnSuccessfully)
 	{
