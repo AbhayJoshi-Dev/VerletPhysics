@@ -1,11 +1,11 @@
 #include<iostream>
 
-#include"Game.h"
+#include"Core.h"
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-	Game game;
-	game.GameLoop();
+	Core c;
+	c.Loop();
 
 	return 0;
 }
