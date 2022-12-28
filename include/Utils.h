@@ -2,13 +2,8 @@
 
 #include<SDL.h>
 
-#include"Vector.h"
-
 namespace utils
 {
-	static float m_currentTime = 0.f;
-	static float m_lastTime = 0.f;
-	static int m_fps;
 
 	inline float HireTimeInSeconds()
 	{
@@ -16,23 +11,47 @@ namespace utils
 		return t * 0.001f;
 	}
 
-	inline void PrintFps()
+	inline int FillCircle(SDL_Renderer* renderer, int x, int y, int radius)
 	{
-		m_currentTime = (float)SDL_GetTicks();
-		if ((m_currentTime - m_lastTime) >= 1000.f)
-		{
-			m_lastTime = m_currentTime;
-			std::cout << m_fps << std::endl;
-			m_fps = 0;
+		int offsetx, offsety, d;
+		int status;
+
+		offsetx = 0;
+		offsety = radius;
+		d = radius - 1;
+		status = 0;
+
+		while (offsety >= offsetx) {
+
+			status += SDL_RenderDrawLine(renderer, x - offsety, y + offsetx,
+				x + offsety, y + offsetx);
+			status += SDL_RenderDrawLine(renderer, x - offsetx, y + offsety,
+				x + offsetx, y + offsety);
+			status += SDL_RenderDrawLine(renderer, x - offsetx, y - offsety,
+				x + offsetx, y - offsety);
+			status += SDL_RenderDrawLine(renderer, x - offsety, y - offsetx,
+				x + offsety, y - offsetx);
+
+			if (status < 0) {
+				status = -1;
+				break;
+			}
+
+			if (d >= 2 * offsetx) {
+				d -= 2 * offsetx + 1;
+				offsetx += 1;
+			}
+			else if (d < 2 * (radius - offsety)) {
+				d += 2 * offsety - 1;
+				offsety -= 1;
+			}
+			else {
+				d += 2 * (offsety - offsetx - 1);
+				offsety -= 1;
+				offsetx += 1;
+			}
 		}
-		m_fps++;
-	}
 
-	inline float Distance(const Vector& a, const Vector& b)
-	{
-		float dx = a.GetX() - b.GetX();
-		float dy = a.GetY() - b.GetY();
-
-		return std::sqrt(dx * dx + dy * dy);
+		return status;
 	}
 }
