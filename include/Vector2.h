@@ -6,18 +6,6 @@ public:
 	Vector2() = default;
 	Vector2(float p_x, float p_y);
 
-	// Returns the x component.
-	float GetX() const;
-
-	// Sets the x component.
-	void SetX(float value);
-
-	// Returns the y component.
-	float GetY() const;
-
-	// Sets the x component.
-	void SetY(float value);
-
 	// Returns the angle.
 	float GetAngle() const;
 
@@ -51,8 +39,12 @@ public:
 	// Returns subtraction of other vector and from current vector.
 	Vector2 operator-(const Vector2& other) const;
 
-private:
+	Vector2 operator*(const float& other) const;
+
+	Vector2 operator/(const float& other) const;
+
+public:
 	// Saves us from having a default constructor.
-	float x = 0.f;
-	float y = 0.f;
+	float m_x = 0.f;
+	float m_y = 0.f;
 };

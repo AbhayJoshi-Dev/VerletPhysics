@@ -1,7 +1,8 @@
 #include"Core.h"
 
+
 Core::Core()
-	:m_quit(false), m_window(NULL), m_renderer(NULL), m_counted_frames(0), m_entity(Vector2(10, 10), 20)
+	:m_quit(false), m_window(NULL), m_renderer(NULL), m_counted_frames(0), m_entity(Vector2(30.f, 30.f), 15.f), m_no_of_objects(10)
 {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 		std::cout << "SDL could not initialize! SDL Error: " << SDL_GetError() << std::endl;
@@ -17,6 +18,14 @@ Core::Core()
 		std::cout << "Renderer could not be created! SDL Error: " << SDL_GetError() << std::endl;
 
 	m_fps_timer.Start();
+
+	m_entities.emplace_back(Vector2(110, 110), 20);
+	m_entities.emplace_back(Vector2(20, 110), 15);
+	m_entities.emplace_back(Vector2(410, 150), 10);
+	m_entities.emplace_back(Vector2(510, 310), 40);
+
+	for (int i = 0; i < m_no_of_objects; i++)
+		m_entities.emplace_back(Vector2(0.f, 0.f), 20.f);
 
 }
 
@@ -58,14 +67,16 @@ void Core::Loop()
 
 void Core::Update()
 {
-
+	for (int i = 0; i < m_entities.size(); i++)
+		m_entities[i].Update(SCREEN_TICKS_PER_FRAME / 1000.f);
 }
 
 void Core::Render()
 {
 	SDL_RenderClear(m_renderer);
 
-	m_entity.Render(m_renderer);
+	for (int i = 0; i < m_entities.size(); i++)
+		m_entities[i].Render(m_renderer);
 
 	SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
 

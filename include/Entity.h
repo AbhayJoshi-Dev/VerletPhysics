@@ -10,8 +10,9 @@ class Entity
 public:
 	Entity() = default;
 	Entity(Vector2 position, float radius);
-	void Update();
+	void Update(float dt);
 	void Render(SDL_Renderer* m_renderer);
+	void Constraints();
 
 private:
 

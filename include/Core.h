@@ -2,6 +2,7 @@
 
 #include<iostream>
 #include<SDL.h>
+#include<vector>
 
 #include"Timer.h"
 #include"Entity.h"
@@ -37,5 +38,9 @@ private:
 	int m_counted_frames;
 
 	Entity m_entity;
+
+	std::vector<Entity> m_entities;
+
+	int m_no_of_objects;
 
 };

@@ -4,32 +4,52 @@
 
 AssetManager::~AssetManager()
 {
-	for (const auto& asset : m_assetMap)
-	{
+	for (const auto& asset : m_asset_map)
 		SDL_DestroyTexture(asset.second);
-	}
+}
+
+AssetManager& AssetManager::GetInstance()
+{
+	static AssetManager* instance = new AssetManager;
+
+	return *instance;
 }
 
 void AssetManager::Load(SDL_Renderer* renderer, const std::string& key, const std::string& filePath)
 {
 	SDL_Texture* tex = NULL;
-	
+
 	tex = IMG_LoadTexture(renderer, filePath.c_str());
-
 	if (tex == NULL)
-		std::cout << "Texture not loaded! " << SDL_GetError() << std::endl;
+		std::cout << "Texture not Loaded!" << SDL_GetError() << std::endl;
 
-	m_assetMap[key] = IMG_LoadTexture(renderer, filePath.c_str());
+	m_asset_map[key] = tex;
 }
 
 SDL_Texture* AssetManager::Get(const std::string& key) const
 {
-	SDL_Texture* texture = NULL;
+	SDL_Texture* tex = NULL;
 
-	if (m_assetMap.find(key) != m_assetMap.end())
+	if (m_asset_map.find(key) != m_asset_map.end())
+		tex = m_asset_map.at(key);
+
+	return tex;
+}
+
+SDL_Texture* AssetManager::LoadTexture(SDL_Renderer* renderer, const std::string& key, const std::string& filePath)
+{
+	SDL_Texture* tex = NULL;
+	if (m_asset_map.find(key) != m_asset_map.end())
 	{
-		texture = m_assetMap.at(key);
+		return m_asset_map.at(key);
 	}
+	else
+	{
+		tex = IMG_LoadTexture(renderer, filePath.c_str());
+		if (tex == NULL)
+			std::cout << "Texture not Loaded!" << SDL_GetError() << std::endl;
 
-	return texture;
+		m_asset_map[key] = tex;
+		return tex;
+	}
 }
