@@ -2,7 +2,8 @@
 
 
 Core::Core()
-	:m_quit(false), m_window(NULL), m_renderer(NULL), m_counted_frames(0), m_entity(Vector2(30.f, 30.f), 15.f), m_no_of_objects(10)
+	:m_quit(false), m_window(NULL), m_renderer(NULL), m_counted_frames(0), m_entity(Vector2(30.f, 30.f), 15.f), m_is_mouse_pressed(false),
+	m_max_objects(200)
 {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 		std::cout << "SDL could not initialize! SDL Error: " << SDL_GetError() << std::endl;
@@ -18,14 +19,7 @@ Core::Core()
 		std::cout << "Renderer could not be created! SDL Error: " << SDL_GetError() << std::endl;
 
 	m_fps_timer.Start();
-
-	m_entities.emplace_back(Vector2(110, 110), 20);
-	m_entities.emplace_back(Vector2(20, 110), 15);
-	m_entities.emplace_back(Vector2(410, 150), 10);
-	m_entities.emplace_back(Vector2(510, 310), 40);
-
-	for (int i = 0; i < m_no_of_objects; i++)
-		m_entities.emplace_back(Vector2(0.f, 0.f), 20.f);
+	m_spawn_timer.Start();
 
 }
 
@@ -47,11 +41,17 @@ void Core::Loop()
 		{
 			if (m_event.type == SDL_QUIT)
 				m_quit = true;
+			if (m_event.type == SDL_MOUSEBUTTONDOWN)
+				if (m_event.button.button == SDL_BUTTON_LEFT)
+					m_is_mouse_pressed = true;
+			if (m_event.type == SDL_MOUSEBUTTONUP)
+				if (m_event.button.button == SDL_BUTTON_LEFT)
+					m_is_mouse_pressed = false;
 		}
 
-		float avgFps = m_counted_frames / (m_fps_timer.GetTicks() / 1000.f);
-		if (avgFps > 2000000)
-			avgFps = 0.f;
+		//float avgFps = m_counted_frames / (m_fps_timer.GetTicks() / 1000.f);
+		//if (avgFps > 2000000)
+			//avgFps = 0.f;
 
 		Update();
 		Render();
@@ -67,8 +67,26 @@ void Core::Loop()
 
 void Core::Update()
 {
-	for (int i = 0; i < m_entities.size(); i++)
-		m_entities[i].Update(SCREEN_TICKS_PER_FRAME / 1000.f);
+
+	if (m_is_mouse_pressed && m_spawn_timer.GetTicks() >= 100.f)
+	{
+		m_spawn_timer.Start();
+		if (m_max_objects > 1)
+		{
+			m_max_objects--;
+			int x, y;
+			SDL_GetMouseState(&x, &y);
+			m_entities.emplace_back(Vector2(x, y), utils::Random(5, 20));
+		}
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		Check_Collision();
+
+		for (int i = 0; i < m_entities.size(); i++)
+			m_entities[i].Update(SCREEN_TICKS_PER_FRAME / 1000.f);
+	}
 }
 
 void Core::Render()
@@ -81,4 +99,35 @@ void Core::Render()
 	SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
 
 	SDL_RenderPresent(m_renderer);
+}
+
+void Core::Check_Collision()
+{
+	for (int i = 0; i < m_entities.size(); i++)
+	{
+		Entity& entity_1 = m_entities[i];
+
+		for (int j = i + 1; j < m_entities.size(); j++)
+		{
+			Entity& entity_2 = m_entities[j];
+
+			Vector2 dv = entity_1.m_position - entity_2.m_position;
+			float dst = sqrt(dv.m_x * dv.m_x + dv.m_y * dv.m_y);
+			float collision_dst = entity_1.m_radius + entity_2.m_radius;
+
+			if (dst <= collision_dst)
+			{
+				Vector2 n = dv / dst;
+
+				float mass_ratio_1 = entity_1.m_radius / (entity_1.m_radius + entity_2.m_radius);
+				float mass_ratio_2 = entity_2.m_radius / (entity_1.m_radius + entity_2.m_radius);
+
+				float delta = 0.5f * 0.75f * (dst - collision_dst);
+
+				entity_1.m_position = entity_1.m_position - (n * (mass_ratio_2 * delta));
+				entity_2.m_position = entity_2.m_position + (n * (mass_ratio_1 * delta));
+
+			}
+		}
+	}
 }

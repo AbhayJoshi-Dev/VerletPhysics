@@ -14,10 +14,13 @@ public:
 	void Render(SDL_Renderer* m_renderer);
 	void Constraints();
 
-private:
+public:
 
 	Vector2 m_position;
-	Vector2 m_last_position;
 	float m_radius;
+	Vector2 m_last_position;
+	
+private:
+
 	Vector2 m_acceleration;
 };

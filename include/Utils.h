@@ -1,6 +1,7 @@
 #pragma once
 
 #include<SDL.h>
+#include<stdlib.h>
 
 namespace utils
 {
@@ -9,6 +10,11 @@ namespace utils
 	{
 		float t = (float)SDL_GetTicks();
 		return t * 0.001f;
+	}
+
+	inline int Random(int min, int max)
+	{
+		return (rand() % (max - min + 1)) + min;
 	}
 
 	inline int FillCircle(SDL_Renderer* renderer, int x, int y, int radius)

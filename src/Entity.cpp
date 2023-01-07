@@ -10,7 +10,6 @@ void Entity::Update(float dt)
 {
 	m_acceleration = m_acceleration + Vector2(0.f, 1000.f); //gravity
 
-
 	Vector2 dv = m_position - m_last_position;
 
 	m_last_position = m_position;

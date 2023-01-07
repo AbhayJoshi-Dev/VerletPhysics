@@ -16,6 +16,7 @@ public:
 	void Loop();
 	void Update();
 	void Render();
+	void Check_Collision();
 
 private:
 
@@ -41,6 +42,9 @@ private:
 
 	std::vector<Entity> m_entities;
 
-	int m_no_of_objects;
+	bool m_is_mouse_pressed;
+
+	int m_max_objects;
+	Timer m_spawn_timer;
 
 };
