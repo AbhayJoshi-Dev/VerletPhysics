@@ -3,7 +3,7 @@
 
 Core::Core()
 	:m_quit(false), m_window(NULL), m_renderer(NULL), m_counted_frames(0), m_entity(Vector2(30.f, 30.f), 15.f), m_is_mouse_pressed(false),
-	m_max_objects(200)
+	m_max_objects(500), m_steps(4)
 {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 		std::cout << "SDL could not initialize! SDL Error: " << SDL_GetError() << std::endl;
@@ -61,7 +61,6 @@ void Core::Loop()
 		int frames_ticks = m_cap_timer.GetTicks();
 		if (frames_ticks < SCREEN_TICKS_PER_FRAME)
 			SDL_Delay(SCREEN_TICKS_PER_FRAME - frames_ticks);
-
 	}
 }
 
@@ -76,16 +75,16 @@ void Core::Update()
 			m_max_objects--;
 			int x, y;
 			SDL_GetMouseState(&x, &y);
-			m_entities.emplace_back(Vector2(x, y), utils::Random(5, 20));
+			m_entities.emplace_back(Vector2(x, y), utils::Random(5, 18));
 		}
 	}
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < m_steps; i++)
 	{
 		Check_Collision();
 
 		for (int i = 0; i < m_entities.size(); i++)
-			m_entities[i].Update(SCREEN_TICKS_PER_FRAME / 1000.f);
+			m_entities[i].Update(1.0 / SCREEN_FPS, m_steps);
 	}
 }
 
@@ -124,9 +123,8 @@ void Core::Check_Collision()
 
 				float delta = 0.5f * 0.75f * (dst - collision_dst);
 
-				entity_1.m_position = entity_1.m_position - (n * (mass_ratio_2 * delta));
-				entity_2.m_position = entity_2.m_position + (n * (mass_ratio_1 * delta));
-
+				entity_1.m_position = entity_1.m_position - n * (mass_ratio_2 * delta);
+				entity_2.m_position = entity_2.m_position + n * (mass_ratio_1 * delta);
 			}
 		}
 	}

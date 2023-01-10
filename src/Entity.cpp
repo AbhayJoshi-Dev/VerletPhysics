@@ -6,15 +6,16 @@ Entity::Entity(Vector2 postiton, float radius)
 	:m_position(postiton), m_radius(radius), m_last_position(postiton)
 {}
 
-void Entity::Update(float dt)
+void Entity::Update(double dt, int steps)
 {
+
 	m_acceleration = m_acceleration + Vector2(0.f, 1000.f); //gravity
 
 	Vector2 dv = m_position - m_last_position;
 
 	m_last_position = m_position;
 
-	m_position = m_position + dv + m_acceleration * (dt * dt);
+	m_position = m_position + dv + m_acceleration * (dt * dt / steps);
 	Constraints();
 
 	m_acceleration = Vector2(0.f, 0.f);
@@ -23,7 +24,9 @@ void Entity::Update(float dt)
 void Entity::Render(SDL_Renderer* renderer)
 {
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-	utils::FillCircle(renderer, m_position.m_x, m_position.m_y, m_radius);
+
+	utils::Draw_Circle(renderer, m_position.m_x, m_position.m_y, m_radius, 255, 255, 255, 255);
+	//utils::FillCircle(renderer, m_position.m_x, m_position.m_y, m_radius);
 }
 
 void Entity::Constraints()

@@ -60,4 +60,54 @@ namespace utils
 
 		return status;
 	}
+
+	inline void Set_Pixel(SDL_Renderer* renderer, int x, int y, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+	{
+		SDL_SetRenderDrawColor(renderer, r, g, b, a);
+		SDL_RenderDrawPoint(renderer, x, y);
+	}
+
+	inline void Draw_Circle(SDL_Renderer* renderer, int p_x, int p_y, int radius, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+	{
+		double error = (double)-radius;
+		double x = (double)radius - 0.5;
+		double y = (double)0.5;
+		double cx = p_x - 0.5;
+		double cy = p_y - 0.5;
+
+		while (x >= y)
+		{
+			Set_Pixel(renderer, (int)(cx + x), (int)(cy + y), r, g, b, a);
+			Set_Pixel(renderer, (int)(cx + y), (int)(cy + x), r, g, b, a);
+
+			if (x != 0)
+			{
+				Set_Pixel(renderer, (int)(cx - x), (int)(cy + y), r, g, b, a);
+				Set_Pixel(renderer, (int)(cx + y), (int)(cy - x), r, g, b, a);
+			}
+
+			if (y != 0)
+			{
+				Set_Pixel(renderer, (int)(cx + x), (int)(cy - y), r, g, b, a);
+				Set_Pixel(renderer, (int)(cx - y), (int)(cy + x), r, g, b, a);
+			}
+
+			if (x != 0 && y != 0)
+			{
+				Set_Pixel(renderer, (int)(cx - x), (int)(cy - y), r, g, b, a);
+				Set_Pixel(renderer, (int)(cx - y), (int)(cy - x), r, g, b, a);
+			}
+
+			error += y;
+			++y;
+			error += y;
+
+			if (error >= 0)
+			{
+				--x;
+				error -= x;
+				error -= x;
+			}
+		}
+	}
 }

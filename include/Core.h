@@ -47,4 +47,6 @@ private:
 	int m_max_objects;
 	Timer m_spawn_timer;
 
+	int m_steps;
+
 };
