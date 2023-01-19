@@ -2,8 +2,8 @@
 
 
 Core::Core()
-	:m_quit(false), m_window(NULL), m_renderer(NULL), m_counted_frames(0), m_entity(Vector2(30.f, 30.f), 15.f), m_is_mouse_pressed(false),
-	m_max_objects(500), m_steps(4)
+	:m_quit(false), m_window(NULL), m_renderer(NULL), m_counted_frames(0), m_is_left_mouse_pressed(false), m_is_right_mouse_pressed(false),
+	m_max_objects(500), m_steps(4), m_chain_first_link(true)
 {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 		std::cout << "SDL could not initialize! SDL Error: " << SDL_GetError() << std::endl;
@@ -42,16 +42,29 @@ void Core::Loop()
 			if (m_event.type == SDL_QUIT)
 				m_quit = true;
 			if (m_event.type == SDL_MOUSEBUTTONDOWN)
+			{
 				if (m_event.button.button == SDL_BUTTON_LEFT)
-					m_is_mouse_pressed = true;
-			if (m_event.type == SDL_MOUSEBUTTONUP)
-				if (m_event.button.button == SDL_BUTTON_LEFT)
-					m_is_mouse_pressed = false;
-		}
+					m_is_left_mouse_pressed = true;
+				if (m_event.button.button == SDL_BUTTON_RIGHT)
+				{
+					int mouse_x, mouse_y;
+					SDL_GetMouseState(&mouse_x, &mouse_y);
 
-		//float avgFps = m_counted_frames / (m_fps_timer.GetTicks() / 1000.f);
-		//if (avgFps > 2000000)
-			//avgFps = 0.f;
+					m_previous_pos = Vector2(mouse_x, mouse_y);
+					m_is_right_mouse_pressed = true;
+				}
+			}
+			if (m_event.type == SDL_MOUSEBUTTONUP)
+			{
+				if (m_event.button.button == SDL_BUTTON_LEFT)
+					m_is_left_mouse_pressed = false;
+				if (m_event.button.button == SDL_BUTTON_RIGHT)
+				{
+					m_is_right_mouse_pressed = false;
+					m_chain_first_link = true;
+				}
+			}
+		}
 
 		Update();
 		Render();
@@ -66,8 +79,8 @@ void Core::Loop()
 
 void Core::Update()
 {
-
-	if (m_is_mouse_pressed && m_spawn_timer.GetTicks() >= 100.f)
+	//object spawning
+	if (m_is_left_mouse_pressed && m_spawn_timer.GetTicks() >= 100.f)
 	{
 		m_spawn_timer.Start();
 		if (m_max_objects > 1)
@@ -75,9 +88,16 @@ void Core::Update()
 			m_max_objects--;
 			int x, y;
 			SDL_GetMouseState(&x, &y);
-			m_entities.emplace_back(Vector2(x, y), utils::Random(5, 18));
+			m_entities.emplace_back(Vector2(x, y), 10, false, false);
 		}
 	}
+
+	//chain
+	if (m_is_right_mouse_pressed)
+	{
+		CreateChain();
+	}
+
 
 	for (int i = 0; i < m_steps; i++)
 	{
@@ -85,6 +105,12 @@ void Core::Update()
 
 		for (int i = 0; i < m_entities.size(); i++)
 			m_entities[i].Update(1.0 / SCREEN_FPS, m_steps);
+
+		/*if (!m_chain_drawn)
+		{
+			for (int i = 0; i < m_chain_index; i++)
+				m_link.ApplyLink(m_entities[i], m_entities[i + 1]);
+		}*/
 	}
 }
 
@@ -116,16 +142,42 @@ void Core::Check_Collision()
 
 			if (dst <= collision_dst)
 			{
-				Vector2 n = dv / dst;
+				Vector2 n_dv = dv / dst; // normalize vector
 
 				float mass_ratio_1 = entity_1.m_radius / (entity_1.m_radius + entity_2.m_radius);
 				float mass_ratio_2 = entity_2.m_radius / (entity_1.m_radius + entity_2.m_radius);
 
 				float delta = 0.5f * 0.75f * (dst - collision_dst);
 
-				entity_1.m_position = entity_1.m_position - n * (mass_ratio_2 * delta);
-				entity_2.m_position = entity_2.m_position + n * (mass_ratio_1 * delta);
+				if(!entity_1.m_pinned)
+					entity_1.m_position = entity_1.m_position - n_dv * (mass_ratio_2 * delta);
+				if(!entity_2.m_pinned)
+					entity_2.m_position = entity_2.m_position + n_dv * (mass_ratio_1 * delta);
 			}
 		}
+	}
+}
+
+void Core::CreateChain()
+{
+	int mouse_x, mouse_y;
+	SDL_GetMouseState(&mouse_x, &mouse_y);
+	Vector2 dv = m_previous_pos - Vector2(mouse_x, mouse_y);
+
+	float dst = sqrt(dv.m_x * dv.m_x + dv.m_y * dv.m_y);
+
+	if (dst >= 21)
+	{
+		if (m_chain_first_link)
+		{
+			m_chain_first_link = false;
+			m_entities.emplace_back(Vector2(mouse_x, mouse_y), 10.f, true, true);
+		}
+		else
+		{
+			m_entities.emplace_back(Vector2(mouse_x, mouse_y), 10.f, false, true);
+		}
+
+		m_previous_pos = Vector2(mouse_x, mouse_y);
 	}
 }

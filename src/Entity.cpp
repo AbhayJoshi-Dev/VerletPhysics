@@ -2,23 +2,25 @@
 
 #include<iostream>
 
-Entity::Entity(Vector2 postiton, float radius)
-	:m_position(postiton), m_radius(radius), m_last_position(postiton)
+Entity::Entity(Vector2 postiton, float radius, bool pinned, bool chain_part)
+	:m_position(postiton), m_radius(radius), m_last_position(postiton), m_pinned(pinned), m_chain_part(chain_part)
 {}
 
 void Entity::Update(double dt, int steps)
 {
+	if (!m_pinned)
+	{
+		m_acceleration = m_acceleration + Vector2(0.f, 1000.f); //gravity
 
-	m_acceleration = m_acceleration + Vector2(0.f, 1000.f); //gravity
+		Vector2 dv = m_position - m_last_position;
 
-	Vector2 dv = m_position - m_last_position;
+		m_last_position = m_position;
 
-	m_last_position = m_position;
+		m_position = m_position + dv + m_acceleration * (dt * dt / steps);
+		Constraints();
 
-	m_position = m_position + dv + m_acceleration * (dt * dt / steps);
-	Constraints();
-
-	m_acceleration = Vector2(0.f, 0.f);
+		m_acceleration = Vector2(0.f, 0.f);
+	}
 }
 
 void Entity::Render(SDL_Renderer* renderer)

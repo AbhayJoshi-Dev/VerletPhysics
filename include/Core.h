@@ -6,6 +6,7 @@
 
 #include"Timer.h"
 #include"Entity.h"
+#include"Chain.h"
 
 class Core
 {
@@ -17,6 +18,7 @@ public:
 	void Update();
 	void Render();
 	void Check_Collision();
+	void CreateChain();
 
 private:
 
@@ -38,15 +40,17 @@ private:
 
 	int m_counted_frames;
 
-	Entity m_entity;
-
 	std::vector<Entity> m_entities;
 
-	bool m_is_mouse_pressed;
+	bool m_is_left_mouse_pressed;
+	bool m_is_right_mouse_pressed;
 
 	int m_max_objects;
 	Timer m_spawn_timer;
 
 	int m_steps;
 
+	Chain m_link;
+	Vector2 m_previous_pos;
+	bool m_chain_first_link;
 };
