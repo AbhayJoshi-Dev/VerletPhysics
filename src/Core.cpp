@@ -3,7 +3,7 @@
 
 Core::Core()
 	:m_quit(false), m_window(NULL), m_renderer(NULL), m_counted_frames(0), m_is_left_mouse_pressed(false), m_is_right_mouse_pressed(false),
-	m_max_objects(500), m_steps(4), m_chain_first_link(true)
+	m_max_objects(500), m_steps(4), m_chain_first_link(true), m_creating_chain(false)
 {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 		std::cout << "SDL could not initialize! SDL Error: " << SDL_GetError() << std::endl;
@@ -79,11 +79,30 @@ void Core::Loop()
 
 void Core::Update()
 {
+
+	m_creating_chain = m_is_right_mouse_pressed;
+
+
+	if (!m_creating_chain && m_temp_chain.m_links.size() > 0)
+	{
+		for (int i = 1; i < m_temp_chain.m_links.size(); i++)
+		{
+			m_entities[m_temp_chain.m_links[i].m_index_1].m_pinned = false;
+			m_entities[m_temp_chain.m_links[i].m_index_2].m_pinned = false;
+		}
+
+		m_chains.emplace_back(m_temp_chain);
+
+		m_temp_chain.m_links.clear();
+
+	}
+
+
 	//object spawning
 	if (m_is_left_mouse_pressed && m_spawn_timer.GetTicks() >= 100.f)
 	{
 		m_spawn_timer.Start();
-		if (m_max_objects > 1)
+		if (m_max_objects > 0)
 		{
 			m_max_objects--;
 			int x, y;
@@ -98,7 +117,6 @@ void Core::Update()
 		CreateChain();
 	}
 
-
 	for (int i = 0; i < m_steps; i++)
 	{
 		Check_Collision();
@@ -106,11 +124,8 @@ void Core::Update()
 		for (int i = 0; i < m_entities.size(); i++)
 			m_entities[i].Update(1.0 / SCREEN_FPS, m_steps);
 
-		/*if (!m_chain_drawn)
-		{
-			for (int i = 0; i < m_chain_index; i++)
-				m_link.ApplyLink(m_entities[i], m_entities[i + 1]);
-		}*/
+		for (int i = 0; i < m_chains.size(); i++)
+			m_chains[i].Update(m_entities);
 	}
 }
 
@@ -175,7 +190,11 @@ void Core::CreateChain()
 		}
 		else
 		{
-			m_entities.emplace_back(Vector2(mouse_x, mouse_y), 10.f, false, true);
+			m_entities.emplace_back(Vector2(mouse_x, mouse_y), 10.f, true, true);
+
+			Link temp_link = { m_entities.size() - 2, 
+							m_entities.size() - 1 };
+			m_temp_chain.m_links.emplace_back(temp_link);
 		}
 
 		m_previous_pos = Vector2(mouse_x, mouse_y);

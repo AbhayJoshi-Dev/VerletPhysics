@@ -8,6 +8,7 @@
 #include"Entity.h"
 #include"Chain.h"
 
+
 class Core
 {
 public:
@@ -50,7 +51,10 @@ private:
 
 	int m_steps;
 
-	Chain m_link;
+	std::vector<Chain> m_chains;
+	Chain m_temp_chain;
+
 	Vector2 m_previous_pos;
 	bool m_chain_first_link;
+	bool m_creating_chain;
 };
