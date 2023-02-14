@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21.2)
 
-project(Ball-Simulator)
+project(VerletPhysics)
 
 set(DEPS_DIR ${CMAKE_SOURCE_DIR}/build/external)
 
@@ -33,20 +33,20 @@ target_include_directories(imgui PUBLIC external/SDL/include/)
 file(GLOB BS_SOURCE_FILES src/*.cpp)
 file(GLOB BS_HEADER_FILES include/*.h)
   
-add_executable(Ball-Simulator ${BS_SOURCE_FILES} ${BS_HEADER_FILES})
+add_executable(VerletPhysics ${BS_SOURCE_FILES} ${BS_HEADER_FILES})
 
-target_include_directories(Ball-Simulator PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/
+target_include_directories(VerletPhysics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/
                                             ${CMAKE_CURRENT_SOURCE_DIR}/external/SDL/include/
                                             ${CMAKE_CURRENT_SOURCE_DIR}/external/SDL_image/
                                             ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui/)
 
-target_link_libraries(Ball-Simulator imgui SDL2 SDL2main SDL2_image)
+target_link_libraries(VerletPhysics imgui SDL2 SDL2main SDL2_image)
 
-add_custom_command(TARGET Ball-Simulator POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different
+add_custom_command(TARGET VerletPhysics POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different
                     "${DEPS_DIR}/SDL/Debug/SDL2d.dll"
                     "${DEPS_DIR}/SDL_image/Debug/SDL2_imaged.dll"
-                    $<TARGET_FILE_DIR:Ball-Simulator>)
+                    $<TARGET_FILE_DIR:VerletPhysics>)
 
-add_custom_command(TARGET Ball-Simulator POST_BUILD
+add_custom_command(TARGET VerletPhysics POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory
-                   ${CMAKE_SOURCE_DIR}/res $<TARGET_FILE_DIR:Ball-Simulator>/res)
+                   ${CMAKE_SOURCE_DIR}/res $<TARGET_FILE_DIR:VerletPhysics>/res)
