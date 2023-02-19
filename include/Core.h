@@ -7,6 +7,7 @@
 #include"Timer.h"
 #include"Entity.h"
 #include"Chain.h"
+#include"Body.h"
 
 
 class Core
@@ -20,6 +21,7 @@ public:
 	void Render();
 	void Check_Collision();
 	void CreateChain();
+	void CreateBody();
 
 private:
 
@@ -57,4 +59,7 @@ private:
 	Vector2 m_previous_pos;
 	bool m_chain_first_link;
 	bool m_creating_chain;
+
+	std::vector<Body> m_bodies;
+	Body m_temp_body;
 };

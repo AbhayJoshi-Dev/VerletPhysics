@@ -44,7 +44,11 @@ void Core::Loop()
 			if (m_event.type == SDL_MOUSEBUTTONDOWN)
 			{
 				if (m_event.button.button == SDL_BUTTON_LEFT)
+				{
 					m_is_left_mouse_pressed = true;
+					
+					CreateBody();
+				}
 				if (m_event.button.button == SDL_BUTTON_RIGHT)
 				{
 					int mouse_x, mouse_y;
@@ -99,7 +103,7 @@ void Core::Update()
 
 
 	//object spawning
-	if (m_is_left_mouse_pressed && m_spawn_timer.GetTicks() >= 100.f)
+	/*if (m_is_left_mouse_pressed && m_spawn_timer.GetTicks() >= 100.f)
 	{
 		m_spawn_timer.Start();
 		if (m_max_objects > 0)
@@ -107,9 +111,13 @@ void Core::Update()
 			m_max_objects--;
 			int x, y;
 			SDL_GetMouseState(&x, &y);
-			m_entities.emplace_back(Vector2(x, y), 10, false, false);
+			m_entities.emplace_back(Vector2(x, y), 10, false);
 		}
-	}
+	}*/
+
+
+
+
 
 	//chain
 	if (m_is_right_mouse_pressed)
@@ -119,14 +127,19 @@ void Core::Update()
 
 	for (int i = 0; i < m_steps; i++)
 	{
-		Check_Collision();
+		//Check_Collision();
 
-		for (int i = 0; i < m_entities.size(); i++)
-			m_entities[i].Update(1.0 / SCREEN_FPS, m_steps);
+		for (int j = 0; j < m_entities.size(); j++)
+			m_entities[j].Update(1.0 / SCREEN_FPS, m_steps);
 
-		for (int i = 0; i < m_chains.size(); i++)
-			m_chains[i].Update(m_entities);
+		for (int k = 0; k < m_chains.size(); k++)
+			m_chains[k].Update(m_entities);
+
+		for (int l = 0; l < m_bodies.size(); l++)
+			m_bodies[l].Update(m_entities);
 	}
+
+
 }
 
 void Core::Render()
@@ -153,11 +166,12 @@ void Core::Check_Collision()
 
 			Vector2 dv = entity_1.m_position - entity_2.m_position;
 			float dst = sqrt(dv.m_x * dv.m_x + dv.m_y * dv.m_y);
+
 			float collision_dst = entity_1.m_radius + entity_2.m_radius;
 
 			if (dst <= collision_dst)
 			{
-				Vector2 n_dv = dv / dst; // normalize vector
+				Vector2 u_dv = dv / dst; // unit vector
 
 				float mass_ratio_1 = entity_1.m_radius / (entity_1.m_radius + entity_2.m_radius);
 				float mass_ratio_2 = entity_2.m_radius / (entity_1.m_radius + entity_2.m_radius);
@@ -165,9 +179,9 @@ void Core::Check_Collision()
 				float delta = 0.5f * 0.75f * (dst - collision_dst);
 
 				if(!entity_1.m_pinned)
-					entity_1.m_position = entity_1.m_position - n_dv * (mass_ratio_2 * delta);
+					entity_1.m_position = entity_1.m_position - u_dv * (mass_ratio_2 * delta);
 				if(!entity_2.m_pinned)
-					entity_2.m_position = entity_2.m_position + n_dv * (mass_ratio_1 * delta);
+					entity_2.m_position = entity_2.m_position + u_dv * (mass_ratio_1 * delta);
 			}
 		}
 	}
@@ -186,11 +200,11 @@ void Core::CreateChain()
 		if (m_chain_first_link)
 		{
 			m_chain_first_link = false;
-			m_entities.emplace_back(Vector2(mouse_x, mouse_y), 10.f, true, true);
+			m_entities.emplace_back(Vector2(mouse_x, mouse_y), 10.f, true);
 		}
 		else
 		{
-			m_entities.emplace_back(Vector2(mouse_x, mouse_y), 10.f, true, true);
+			m_entities.emplace_back(Vector2(mouse_x, mouse_y), 10.f, true);
 
 			Link temp_link = { m_entities.size() - 2, 
 							m_entities.size() - 1 };
@@ -199,4 +213,30 @@ void Core::CreateChain()
 
 		m_previous_pos = Vector2(mouse_x, mouse_y);
 	}
+}
+
+void Core::CreateBody()
+{
+	int mouse_x, mouse_y;
+	SDL_GetMouseState(&mouse_x, &mouse_y);
+
+	m_entities.emplace_back(Vector2(mouse_x - 100, mouse_y - 100), 10.f, false);
+	m_entities.emplace_back(Vector2(mouse_x + 100, mouse_y - 100), 10.f, false);
+	m_entities.emplace_back(Vector2(mouse_x + 100, mouse_y + 100), 10.f, false);
+	m_entities.emplace_back(Vector2(mouse_x - 100, mouse_y + 100), 10.f, false);
+
+	Stick s_1 = { m_entities.size() - 4 , m_entities.size() - 3, 100.f };
+	Stick s_2 = { m_entities.size() - 3 , m_entities.size() - 2, 100.f };
+	Stick s_3 = { m_entities.size() - 2 , m_entities.size() - 1, 100.f };
+	Stick s_4 = { m_entities.size() - 1 , m_entities.size() - 4, 100.f };
+	Stick s_5 = { m_entities.size() - 4 , m_entities.size() - 2, 141.42f };
+
+	m_temp_body.m_sticks.emplace_back(s_1);
+	m_temp_body.m_sticks.emplace_back(s_2);
+	m_temp_body.m_sticks.emplace_back(s_3);
+	m_temp_body.m_sticks.emplace_back(s_4);
+	m_temp_body.m_sticks.emplace_back(s_5);
+
+	m_bodies.emplace_back(m_temp_body);
+	m_temp_body.m_sticks.clear();
 }

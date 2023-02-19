@@ -2,8 +2,8 @@
 
 #include<iostream>
 
-Entity::Entity(Vector2 postiton, float radius, bool pinned, bool chain_part)
-	:m_position(postiton), m_radius(radius), m_last_position(postiton), m_pinned(pinned), m_chain_part(chain_part)
+Entity::Entity(Vector2 postiton, float radius, bool pinned)
+	:m_position(postiton), m_radius(radius), m_last_position(postiton), m_pinned(pinned)
 {}
 
 void Entity::Update(double dt, int steps)
