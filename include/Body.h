@@ -30,6 +30,11 @@ struct Stick
 		entities[m_index_2].m_position.m_y += offset_y;
 	}
 
+	void Render(SDL_Renderer* renderer, std::vector<Entity>& entities)
+	{
+		SDL_RenderDrawLine(renderer, entities[m_index_1].m_position.m_x, entities[m_index_1].m_position.m_y, entities[m_index_2].m_position.m_x, entities[m_index_2].m_position.m_y);
+	}
+
 };
 
 class Body
@@ -37,6 +42,7 @@ class Body
 public:
 	Body();
 	void Update(std::vector<Entity>& entities);
+	void Render(SDL_Renderer* renderer, std::vector<Entity>& entities);
 
 public:
 	std::vector<Stick> m_sticks;
