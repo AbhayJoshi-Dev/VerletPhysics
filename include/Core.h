@@ -8,6 +8,7 @@
 #include"Entity.h"
 #include"Chain.h"
 #include"Body.h"
+#include"Solver.h"
 
 
 class Core
@@ -63,4 +64,12 @@ private:
 	std::vector<Body> m_bodies;
 	Body m_temp_body;
 	Timer m_body_spawn_timer;
+
+
+
+	Solver m_solver;
+
+
+
+
 };

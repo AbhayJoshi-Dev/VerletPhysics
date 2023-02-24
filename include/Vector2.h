@@ -43,8 +43,12 @@ public:
 
 	Vector2 operator/(const float& other) const;
 
+	void operator+=(const Vector2& v);
+
+	void operator-=(const Vector2& v);
+
 public:
 	// Saves us from having a default constructor.
-	float m_x = 0.f;
-	float m_y = 0.f;
+	float x = 0.f;
+	float y = 0.f;
 };

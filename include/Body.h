@@ -13,8 +13,8 @@ struct Stick
 
 	void Update(std::vector<Entity>& entities)
 	{
-		float dx = entities[m_index_2].m_position.m_x - entities[m_index_1].m_position.m_x;
-		float dy = entities[m_index_2].m_position.m_y - entities[m_index_1].m_position.m_y;
+		/*float dx = entities[m_index_2].m_position.x - entities[m_index_1].m_position.x;
+		float dy = entities[m_index_2].m_position.y - entities[m_index_1].m_position.y;
 
 		float dst = sqrt(dx * dx + dy * dy);
 
@@ -23,16 +23,16 @@ struct Stick
 		float offset_x = dx * per;
 		float offset_y = dy * per;
 
-		entities[m_index_1].m_position.m_x -= offset_x;
-		entities[m_index_1].m_position.m_y -= offset_y;
+		entities[m_index_1].m_position.x -= offset_x;
+		entities[m_index_1].m_position.y -= offset_y;
 
-		entities[m_index_2].m_position.m_x += offset_x;
-		entities[m_index_2].m_position.m_y += offset_y;
+		entities[m_index_2].m_position.x += offset_x;
+		entities[m_index_2].m_position.y += offset_y;*/
 	}
 
 	void Render(SDL_Renderer* renderer, std::vector<Entity>& entities)
 	{
-		SDL_RenderDrawLine(renderer, entities[m_index_1].m_position.m_x, entities[m_index_1].m_position.m_y, entities[m_index_2].m_position.m_x, entities[m_index_2].m_position.m_y);
+		//SDL_RenderDrawLine(renderer, entities[m_index_1].m_position.x, entities[m_index_1].m_position.y, entities[m_index_2].m_position.x, entities[m_index_2].m_position.y);
 	}
 
 };

@@ -13,9 +13,9 @@ struct Link
 
 	void ApplyLink(std::vector<Entity>& entities)
 	{
-		Vector2 axis = entities[m_index_1].m_position - entities[m_index_2].m_position;
+		/*Vector2 axis = entities[m_index_1].m_position - entities[m_index_2].m_position;
 
-		float dst = sqrt(axis.m_x * axis.m_x + axis.m_y * axis.m_y);
+		float dst = sqrt(axis.x * axis.x + axis.y * axis.y);
 
 		Vector2 u = axis / dst;
 		float delta = m_target_dst - dst;
@@ -23,7 +23,7 @@ struct Link
 		if (!entities[m_index_1].m_pinned)
 			entities[m_index_1].m_position = entities[m_index_1].m_position + u * 0.5 * delta;
 		if (!entities[m_index_2].m_pinned)
-			entities[m_index_2].m_position = entities[m_index_2].m_position - u * 0.5 * delta;
+			entities[m_index_2].m_position = entities[m_index_2].m_position - u * 0.5 * delta;*/
 	}
 };
 
