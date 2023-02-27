@@ -10,7 +10,7 @@ void Entity::Update(double dt, int steps)
 {
 	if (!m_pinned)
 	{
-		m_acceleration = m_acceleration + Vector2(0.f, 1000.f); //gravity
+		m_acceleration += Vector2(0.f, 1000.f); //gravity
 
 		Vector2 dv = m_position - m_old_position;
 
@@ -42,6 +42,26 @@ const Vector2& Entity::GetOldPosition() const
 const float Entity::GetRadius() const
 {
 	return m_radius;
+}
+
+void Entity::Move(const Vector2& v)
+{
+	m_position += v;
+}
+
+void Entity::ReverseOldX(float x)
+{
+	m_old_position.x = m_position.x + x;
+}
+
+void Entity::ReverseOldY(float y)
+{
+	m_old_position.y = m_position.y + y;
+}
+
+const bool Entity::IsPinned() const
+{
+	return m_pinned;
 }
 
 /*void Entity::Constraints()

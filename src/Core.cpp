@@ -4,7 +4,7 @@
 Core::Core()
 	:m_quit(false), m_window(NULL), m_renderer(NULL), m_counted_frames(0), m_is_left_mouse_pressed(false), m_is_right_mouse_pressed(false),
 	m_max_objects(500), m_steps(4), m_chain_first_link(true), m_creating_chain(false),
-	m_solver(Vector2(SCREEN_WIDTH, SCREEN_HEIGHT), 10.f, { 0.f, 1000.f })
+	m_solver(Vector2(SCREEN_WIDTH, SCREEN_HEIGHT), 10.f, { 0.f, 1000.f }, 4)
 {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 		std::cout << "SDL could not initialize! SDL Error: " << SDL_GetError() << std::endl;
@@ -23,7 +23,21 @@ Core::Core()
 	m_spawn_timer.Start();
 	m_body_spawn_timer.Start();
 
-	m_solver.AddEntity({ 100.f, 100.f }, 10.f, false);
+
+	Entity e1 = m_solver.AddEntity(Vector2(100.f, 100.f), 10.f, false);
+	Entity e2 = m_solver.AddEntity(Vector2(200.f, 100.f), 10.f, false);
+	Entity e3 = m_solver.AddEntity(Vector2(300.f, 100.f), 10.f, false);
+	Entity e4 = m_solver.AddEntity(Vector2(400.f, 100.f), 10.f, false);
+	Entity e5 = m_solver.AddEntity(Vector2(500.f, 100.f), 10.f, false);
+	Entity e6 = m_solver.AddEntity(Vector2(600.f, 100.f), 10.f, false);
+	Entity e7 = m_solver.AddEntity(Vector2(700.f, 100.f), 10.f, false);
+
+	m_solver.AddConstraint(e1, e2, 20.f);
+	m_solver.AddConstraint(e2, e3, 20.f);
+	m_solver.AddConstraint(e3, e4, 20.f);
+	m_solver.AddConstraint(e4, e5, 20.f);
+	m_solver.AddConstraint(e5, e6, 20.f);
+	m_solver.AddConstraint(e6, e7, 20.f);
 
 }
 
@@ -45,22 +59,20 @@ void Core::Loop()
 		{
 			if (m_event.type == SDL_QUIT)
 				m_quit = true;
-			/*if (m_event.type == SDL_MOUSEBUTTONDOWN)
+			if (m_event.type == SDL_MOUSEBUTTONDOWN)
 			{
 				if (m_event.button.button == SDL_BUTTON_LEFT)
 				{
 					m_is_left_mouse_pressed = true;
-					
-					//CreateBody();
 				}
-				if (m_event.button.button == SDL_BUTTON_RIGHT)
+				/*if (m_event.button.button == SDL_BUTTON_RIGHT)
 				{
 					int mouse_x, mouse_y;
 					SDL_GetMouseState(&mouse_x, &mouse_y);
 
 					m_previous_pos = Vector2(mouse_x, mouse_y);
 					m_is_right_mouse_pressed = true;
-				}
+				}*/
 			}
 			if (m_event.type == SDL_MOUSEBUTTONUP)
 			{
@@ -71,11 +83,10 @@ void Core::Loop()
 					m_is_right_mouse_pressed = false;
 					m_chain_first_link = true;
 				}
-			}*/
+			}
 		}
 
-		//Update();
-		m_solver.Update(1.0 / SCREEN_FPS, m_steps);
+		Update();
 		Render();
 
 		++m_counted_frames;
@@ -86,10 +97,28 @@ void Core::Loop()
 	}
 }
 
+void Core::Update()
+{
+
+	if (m_is_left_mouse_pressed && m_spawn_timer.GetTicks() >= 100.f)
+	{
+		m_spawn_timer.Start();
+		if (m_max_objects > 0)
+		{
+			m_max_objects--;
+			int x, y;
+			SDL_GetMouseState(&x, &y);
+			m_solver.AddEntity(Vector2(x, y), 10.f, false);
+		}
+	}
+
+
+	m_solver.Update(1.0 / SCREEN_FPS, m_steps);
+}
+
 void Core::Render()
 {
 	SDL_RenderClear(m_renderer);
-
 
 	SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
 
@@ -98,9 +127,8 @@ void Core::Render()
 	for (const Entity& entity : entities)
 	{
 		const Vector2& position = entity.GetPosition();
-		float radius = entity.GetRadius();
 
-		utils::Draw_Circle(m_renderer, position.x, position.y, radius, 255, 255, 255, 255);
+		utils::Draw_Circle(m_renderer, position.x, position.y, entity.GetRadius(), 255, 255, 255, 255);
 	}
 
 	SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);

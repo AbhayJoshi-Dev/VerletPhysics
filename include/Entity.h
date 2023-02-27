@@ -15,6 +15,10 @@ public:
 	const Vector2& GetPosition() const;
 	const Vector2& GetOldPosition() const;
 	const float GetRadius() const;
+	void Move(const Vector2& v);
+	void ReverseOldX(float x);
+	void ReverseOldY(float y);
+	const bool IsPinned() const;
 	//void Constraints();
 
 private:
