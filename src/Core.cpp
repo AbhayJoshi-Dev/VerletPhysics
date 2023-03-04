@@ -4,7 +4,7 @@
 Core::Core()
 	:m_quit(false), m_window(NULL), m_renderer(NULL), m_counted_frames(0), m_is_left_mouse_pressed(false), m_is_right_mouse_pressed(false),
 	m_max_objects(500), m_steps(4), m_chain_first_link(true), m_creating_chain(false),
-	m_solver(Vector2(SCREEN_WIDTH, SCREEN_HEIGHT), 10.f, { 0.f, 1000.f }, 4)
+	m_solver(Vector2(SCREEN_WIDTH, SCREEN_HEIGHT), 10.f, { 0.f, 1000.f }, m_steps)
 {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 		std::cout << "SDL could not initialize! SDL Error: " << SDL_GetError() << std::endl;
@@ -24,21 +24,16 @@ Core::Core()
 	m_body_spawn_timer.Start();
 
 
-	Entity e1 = m_solver.AddEntity(Vector2(100.f, 100.f), 10.f, false);
-	Entity e2 = m_solver.AddEntity(Vector2(200.f, 100.f), 10.f, false);
-	Entity e3 = m_solver.AddEntity(Vector2(300.f, 100.f), 10.f, false);
-	Entity e4 = m_solver.AddEntity(Vector2(400.f, 100.f), 10.f, false);
-	Entity e5 = m_solver.AddEntity(Vector2(500.f, 100.f), 10.f, false);
-	Entity e6 = m_solver.AddEntity(Vector2(600.f, 100.f), 10.f, false);
-	Entity e7 = m_solver.AddEntity(Vector2(700.f, 100.f), 10.f, false);
+	std::shared_ptr<Entity> e1 = m_solver.AddEntity(Vector2(100.f, 100.f), 10.f, false);
+	std::shared_ptr<Entity> e2 = m_solver.AddEntity(Vector2(200.f, 100.f), 10.f, false);
+	//std::shared_ptr<Entity> e3 = m_solver.AddEntity(Vector2(300.f, 100.f), 10.f, false);
+	//std::shared_ptr<Entity> e4 = m_solver.AddEntity(Vector2(400.f, 100.f), 10.f, false);
+
+	e1->m_pinned = true;
 
 	m_solver.AddConstraint(e1, e2, 20.f);
-	m_solver.AddConstraint(e2, e3, 20.f);
-	m_solver.AddConstraint(e3, e4, 20.f);
-	m_solver.AddConstraint(e4, e5, 20.f);
-	m_solver.AddConstraint(e5, e6, 20.f);
-	m_solver.AddConstraint(e6, e7, 20.f);
-
+	//m_solver.AddConstraint(e2, e3, 20.f);
+	//m_solver.AddConstraint(e3, e4, 20.f);
 }
 
 Core::~Core()
@@ -122,13 +117,13 @@ void Core::Render()
 
 	SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
 
-	const std::vector<Entity>& entities = m_solver.GetEntities();
+	const std::vector<std::shared_ptr<Entity>> entities = m_solver.GetEntities();
 
-	for (const Entity& entity : entities)
+	for (const std::shared_ptr<Entity> entity : entities)
 	{
-		const Vector2& position = entity.GetPosition();
+		const Vector2& position = entity->GetPosition();
 
-		utils::Draw_Circle(m_renderer, position.x, position.y, entity.GetRadius(), 255, 255, 255, 255);
+		utils::Draw_Circle(m_renderer, position.x, position.y, entity->GetRadius(), 255, 255, 255, 255);
 	}
 
 	SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
