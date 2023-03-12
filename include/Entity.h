@@ -19,6 +19,7 @@ public:
 	void ReverseOldX(float x);
 	void ReverseOldY(float y);
 	const bool IsPinned() const;
+	void Pinned(bool pinned);
 	//void Constraints();
 
 	bool m_pinned;

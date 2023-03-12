@@ -64,6 +64,11 @@ const bool Entity::IsPinned() const
 	return m_pinned;
 }
 
+void Entity::Pinned(bool pinned)
+{
+	m_pinned = pinned;
+}
+
 /*void Entity::Constraints()
 {
 	Vector2 dv = m_position - m_old_position;
