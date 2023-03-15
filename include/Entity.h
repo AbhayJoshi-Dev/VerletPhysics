@@ -20,10 +20,9 @@ public:
 	void ReverseOldY(float y);
 	const bool IsPinned() const;
 	void Pinned(bool pinned);
-	//void Constraints();
 
-	bool m_pinned;
 private:
+	bool m_pinned;
 	Vector2 m_position;
 	float m_radius;
 	Vector2 m_old_position;

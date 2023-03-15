@@ -8,6 +8,7 @@
 #include"CollisionSolver.h"
 #include"Constraint.h"
 #include"ConstraintSolver.h"
+#include"Segment.h"
 
 class Solver
 {
@@ -18,6 +19,7 @@ public:
 	std::shared_ptr<Entity>& AddEntity(const Vector2& position, float radius, bool pinned);
 	const std::vector<std::shared_ptr<Entity>>& GetEntities() const;
 	std::shared_ptr<Constraint>& AddConstraint(std::shared_ptr<Entity>& entity_1, std::shared_ptr<Entity>& entity_2, float length);
+	std::shared_ptr<Segment>& AddSegment(std::shared_ptr<Entity>& entity_1, std::shared_ptr<Entity>& entity_2, float length);
 
 private:
 	Vector2 m_dimension;
@@ -25,4 +27,5 @@ private:
 	CollisionSolver m_collision_solver;
 	std::vector<std::shared_ptr<Constraint>> m_constraints;
 	ConstraintSolver m_constraint_solver;
+	std::vector<std::shared_ptr<Segment>> m_segments;
 };

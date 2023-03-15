@@ -9,7 +9,6 @@ Core::Core():
 	m_is_left_mouse_pressed(false),
 	m_is_right_mouse_pressed(false),
 	m_max_objects(500), m_steps(4),
-	m_creating_chain(false),
 	m_solver(Vector2(SCREEN_WIDTH, SCREEN_HEIGHT), 10.f, { 0.f, 1000.f }, m_steps)
 {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -27,7 +26,18 @@ Core::Core():
 
 	m_fps_timer.Start();
 	m_spawn_timer.Start();
-	m_body_spawn_timer.Start();
+
+	std::shared_ptr<Entity> e1 = m_solver.AddEntity(Vector2(10, 10), 10, false);
+	std::shared_ptr<Entity> e2 = m_solver.AddEntity(Vector2(100, 100), 10, false);
+	std::shared_ptr<Entity> e3 = m_solver.AddEntity(Vector2(200, 200), 10, false);
+	std::shared_ptr<Entity> e4 = m_solver.AddEntity(Vector2(300, 300), 10, false);
+
+	m_solver.AddSegment(e1, e2, 80);
+	m_solver.AddSegment(e2, e3, 80);
+	m_solver.AddSegment(e3, e4, 80);
+	m_solver.AddSegment(e4, e1, 80);
+	m_solver.AddSegment(e1, e3, 80);
+	m_solver.AddSegment(e2, e4, 80);
 }
 
 Core::~Core()

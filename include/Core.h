@@ -6,8 +6,6 @@
 
 #include"Timer.h"
 #include"Entity.h"
-#include"Chain.h"
-#include"Body.h"
 #include"Solver.h"
 
 
@@ -20,9 +18,7 @@ public:
 	void Loop();
 	void Update();
 	void Render();
-	//void Check_Collision();
 	void CreateChain();
-	//void CreateBody();
 
 private:
 
@@ -54,16 +50,7 @@ private:
 
 	int m_steps;
 
-	std::vector<Chain> m_chains;
-	Chain m_temp_chain;
-
 	Vector2 m_previous_pos;
-
-	bool m_creating_chain;
-
-	std::vector<Body> m_bodies;
-	Body m_temp_body;
-	Timer m_body_spawn_timer;
 
 	std::vector<std::shared_ptr<Entity>> m_temp_entities;
 
