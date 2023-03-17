@@ -17,6 +17,7 @@ namespace utils
 		return (rand() % (max - min + 1)) + min;
 	}
 
+	//https://gist.github.com/derofim/912cfc9161269336f722
 	inline int FillCircle(SDL_Renderer* renderer, int x, int y, int radius)
 	{
 		int offsetx, offsety, d;
@@ -61,12 +62,14 @@ namespace utils
 		return status;
 	}
 
+	//https://gist.github.com/derofim/912cfc9161269336f722
 	inline void Set_Pixel(SDL_Renderer* renderer, int x, int y, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
 	{
 		SDL_SetRenderDrawColor(renderer, r, g, b, a);
 		SDL_RenderDrawPoint(renderer, x, y);
 	}
 
+	//https://gist.github.com/derofim/912cfc9161269336f722
 	inline void Draw_Circle(SDL_Renderer* renderer, int p_x, int p_y, int radius, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
 	{
 		double error = (double)-radius;
