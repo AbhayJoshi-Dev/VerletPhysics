@@ -14,7 +14,7 @@ Core::Core():
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 		std::cout << "SDL could not initialize! SDL Error: " << SDL_GetError() << std::endl;
 
-	m_window = SDL_CreateWindow("Ball Simulator", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	m_window = SDL_CreateWindow("Verlet Physics", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	
 	if (m_window == NULL)
 		std::cout << "Window could not be created! SDL Error: " << SDL_GetError() << std::endl;
@@ -27,17 +27,18 @@ Core::Core():
 	m_fps_timer.Start();
 	m_spawn_timer.Start();
 
-	std::shared_ptr<Entity> e1 = m_solver.AddEntity(Vector2(10, 10), 10, false);
-	std::shared_ptr<Entity> e2 = m_solver.AddEntity(Vector2(100, 100), 10, false);
-	std::shared_ptr<Entity> e3 = m_solver.AddEntity(Vector2(200, 200), 10, false);
-	std::shared_ptr<Entity> e4 = m_solver.AddEntity(Vector2(300, 300), 10, false);
+	//std::shared_ptr<Entity> e1 = m_solver.AddEntity(Vector2(10, 500), 10, false);
+	//std::shared_ptr<Entity> e2 = m_solver.AddEntity(Vector2(90, 500), 10, false);
+	//std::shared_ptr<Entity> e3 = m_solver.AddEntity(Vector2(10, 590), 10, false);
+	//std::shared_ptr<Entity> e4 = m_solver.AddEntity(Vector2(90, 590), 10, false);
 
-	m_solver.AddSegment(e1, e2, 80);
-	m_solver.AddSegment(e2, e3, 80);
-	m_solver.AddSegment(e3, e4, 80);
-	m_solver.AddSegment(e4, e1, 80);
-	m_solver.AddSegment(e1, e3, 80);
-	m_solver.AddSegment(e2, e4, 80);
+	//m_solver.AddConstraint(e1, e2, 80);
+	//m_solver.AddConstraint(e2, e3, 80);
+	//m_solver.AddConstraint(e3, e4, 80);
+	//m_solver.AddConstraint(e4, e1, 80);
+
+	//m_solver.AddSegment(e1, e3, 80);
+	//m_solver.AddSegment(e2, e4, 80);
 }
 
 Core::~Core()

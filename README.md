@@ -1,10 +1,10 @@
-# Ball Simulator
+# Verlet Physics
 
-An experiment for learning collision detection
 
 ## Demo
 
-![](https://i.imgur.com/jk3LTKB.png)
+![](https://i.imgur.com/SVVRs4a.gif)
+
 
 ## Build Instructions
 
@@ -17,12 +17,12 @@ An experiment for learning collision detection
 
     ```cmd
     # Clone this project along with submodules
-    $ git clone --recursive https://github.com/AbhayJoshi-Dev/Ball-Simulator
+    $ git clone --recursive https://github.com/AbhayJoshi-Dev/VerletPhysics
 
     # Go to project root
-    $ cd Ball-Simulator
+    $ cd VerletPhysics
 
-    # Pull SDL and SDL_image as submodule (if you cloned without --recursive flag)
+    # Pull SDL as submodule (if you cloned without --recursive flag)
     $ git submodule update --init
 
     # Create a folder for build
