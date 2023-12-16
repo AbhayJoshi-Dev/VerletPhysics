@@ -8,7 +8,7 @@ Constraint::Constraint():
 	m_length(0.0f)
 {}
 
-Constraint::Constraint(std::shared_ptr<Entity>& entity_1, std::shared_ptr<Entity>& entity_2, float length):
+Constraint::Constraint(Entity* entity_1, Entity* entity_2, float length):
 	m_entity_1(entity_1),
 	m_entity_2(entity_2),
 	m_length(length)

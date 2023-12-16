@@ -40,7 +40,7 @@ private:
 
 	int m_counted_frames;
 
-	std::vector<Entity> m_entities;
+	std::vector<Entity*> m_entities;
 
 	bool m_is_left_mouse_pressed;
 	bool m_is_right_mouse_pressed;
@@ -52,7 +52,7 @@ private:
 
 	Vector2 m_previous_pos;
 
-	std::vector<std::shared_ptr<Entity>> m_temp_entities;
+	std::vector<Entity*> m_temp_entities;
 
 	Solver m_solver;
 

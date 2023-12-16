@@ -16,16 +16,16 @@ public:
 	Solver() = default;
 	Solver(const Vector2& dimension, float entity_radius, const Vector2& gravity, int steps);
 	void Update(float dt, int steps);
-	std::shared_ptr<Entity>& AddEntity(const Vector2& position, float radius, bool pinned);
-	const std::vector<std::shared_ptr<Entity>>& GetEntities() const;
-	std::shared_ptr<Constraint>& AddConstraint(std::shared_ptr<Entity>& entity_1, std::shared_ptr<Entity>& entity_2, float length);
-	std::shared_ptr<Segment>& AddSegment(std::shared_ptr<Entity>& entity_1, std::shared_ptr<Entity>& entity_2, float length);
+	Entity* AddEntity(const Vector2& position, float radius, bool pinned);
+	const std::vector<Entity*>& GetEntities() const;
+	Constraint* AddConstraint(Entity* entity_1, Entity* entity_2, float length);
+	Segment* AddSegment(Entity* entity_1, Entity* entity_2, float length);
 
 private:
 	Vector2 m_dimension;
-	std::vector<std::shared_ptr<Entity>> m_entities;
+	std::vector<Entity*> m_entities;
 	CollisionSolver m_collision_solver;
-	std::vector<std::shared_ptr<Constraint>> m_constraints;
+	std::vector<Constraint*> m_constraints;
 	ConstraintSolver m_constraint_solver;
-	std::vector<std::shared_ptr<Segment>> m_segments;
+	std::vector<Segment*> m_segments;
 };

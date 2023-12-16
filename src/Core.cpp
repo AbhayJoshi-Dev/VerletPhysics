@@ -128,9 +128,9 @@ void Core::Render()
 
 	SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
 
-	const std::vector<std::shared_ptr<Entity>>& entities = m_solver.GetEntities();
+	const std::vector<Entity*>& entities = m_solver.GetEntities();
 
-	for (const std::shared_ptr<Entity>& entity : entities)
+	for (const Entity* entity : entities)
 	{
 		const Vector2& position = entity->GetPosition();
 

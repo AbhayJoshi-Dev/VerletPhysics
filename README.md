@@ -1,5 +1,6 @@
 # Verlet Physics
 
+Using Verlet Integration for entities
 
 ## Demo
 

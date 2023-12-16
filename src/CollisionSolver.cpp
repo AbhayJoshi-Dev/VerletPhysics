@@ -5,16 +5,18 @@ CollisionSolver::CollisionSolver(const Vector2& dimension, int steps):
 	m_steps(steps)
 {}
 
-void CollisionSolver::Update(std::vector<std::shared_ptr<Entity>>& entities, float dt)
+void CollisionSolver::Update(std::vector<Entity*>& entities, float dt)
 {
 	BoundaryCollision(entities);
 	EntityCollision(entities);
 }
 
-void CollisionSolver::BoundaryCollision(std::vector<std::shared_ptr<Entity>>& entities)
+void CollisionSolver::BoundaryCollision(std::vector<Entity*>& entities)
 {
-	for (std::shared_ptr<Entity>& entity : entities)
+	for (int i = 0; i < entities.size(); i++)
 	{
+		Entity* entity = entities[i];
+
 		Vector2 position = entity->GetPosition();
 		Vector2 old_position = entity->GetOldPosition();
 		float radius = entity->GetRadius();
@@ -45,15 +47,15 @@ void CollisionSolver::BoundaryCollision(std::vector<std::shared_ptr<Entity>>& en
 	}
 }
 
-void CollisionSolver::EntityCollision(std::vector<std::shared_ptr<Entity>>& entities)
+void CollisionSolver::EntityCollision(std::vector<Entity*>& entities)
 {
 	for (int i = 0; i < entities.size(); i++)
 	{
-		std::shared_ptr<Entity>& entity_1 = entities[i];
+		Entity* entity_1 = entities[i];
 
 		for (int j = i + 1; j < entities.size(); j++)
 		{
-			std::shared_ptr<Entity>& entity_2 = entities[j];
+			Entity* entity_2 = entities[j];
 
 			Vector2 dv = entity_1->GetPosition() - entity_2->GetPosition();
 			float dst = sqrt(dv.x * dv.x + dv.y * dv.y);
